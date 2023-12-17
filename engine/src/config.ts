@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Network
 const NETWORK : string = `${process.env.NETWORK}`;
 
 function getNetwork(network: string) : ChainId {
@@ -15,6 +16,7 @@ function getNetwork(network: string) : ChainId {
 
 const NETWORK2: ChainId = getNetwork(NETWORK);
 
+// Exchange
 const EXCHANGE : string = `${process.env.EXCHANGE}`;
 
 function getExchange(exchange: string): Exchange {
@@ -26,10 +28,19 @@ function getExchange(exchange: string): Exchange {
 
 const EXCHANGE2 : Exchange = getExchange(EXCHANGE);
 
+// Mongo Database
 const DATABASE_URL : string = `${process.env.DATABASE_URL}`;
+
+// Uniswap GraphQL API
 const UNISWAP_GRAPH_URL : string = `${process.env.UNISWAP_GRAPH_URL}`;
+
+// Update Interval
 const MONITOR_INTERVAL : number = parseInt(`${process.env.MONITOR_INTERVAL}`);
+// Total Pool Count
 const POOL_COUNT : number = parseInt(`${process.env.POOL_COUNT}`);
+
+// WebSocket Server
+const WS_PORT : number = parseInt(`${process.env.WS_PORT}`);
 
 export default {
     NETWORK,
@@ -39,5 +50,6 @@ export default {
     DATABASE_URL,
     UNISWAP_GRAPH_URL,
     MONITOR_INTERVAL,
-    POOL_COUNT
+    POOL_COUNT,
+    WS_PORT
 }
