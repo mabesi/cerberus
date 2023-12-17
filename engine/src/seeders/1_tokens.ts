@@ -48,4 +48,4 @@ export class TokensSeeder implements ISeeder {
 
 }
 
-export default new TokensSeeder().execute();
+export default new TokensSeeder();
