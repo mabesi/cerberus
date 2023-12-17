@@ -1,19 +1,36 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-import Link from 'next/link';
 import Navbar from "@/components/Navbars/AuthNavbar.js";
 import FooterSmall from "@/components/Footers/FooterSmall.js";
 
-export default function Login() {
+type User = {
+  name: string;
+  email: string;
+  checkTos: boolean;
+}
+
+export default function Register() {
 
   const { push } = useRouter();
+
+  const searchParams = useSearchParams();
+
+  const [code, setCode ] = useState<string>(searchParams.get("code") || "");
+  const [wallet, setWallet ] = useState<string>(searchParams.get("wallet") || "");
   const [message, setMessage ] = useState<string>("");
 
-  function btnLoginClick() {
-    push("/register");
+  useEffect(() => {
+    if (code && code.length === 6 && wallet) {
+      console.log(code, wallet);
+      //push("/pay");
+    }
+  }, [code, wallet]);
+
+  function btnActivateClick() {
+    push("/pay");
   }
 
   return <>
@@ -35,29 +52,41 @@ export default function Login() {
                     <img src="/img/cerberus.png" width={128} />
                   </div>
                   <div className="text-center mb-3">
+
                     <h6 className="text-blueGray-500 text-sm font-bold">
-                      Sign in with your MetaMask and start bot trading today.
+                      We sent you a code by email right now. Fill below the 6 numbers.
                     </h6>
-                    <button
+                  </div>
+                  <form>
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="grid-password"
+                      >
+                        Code
+                      </label>
+                      <input
+                        type="number"
+                        id="code"
+                        value={code}
+                        onChange={evt => setCode(evt.target.value)}
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        placeholder="000000"
+                      />
+                    </div>
+
+                    <div className="text-center mt-6">
+                      <button
                         className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 mt-5 inline-flex items-center"
                         type="button"
-                        onClick={btnLoginClick}
+                        onClick={btnActivateClick}
                       >
-                        <img src="/img/metamask.svg" width={64} />
-                        <span>Click to Connect</span>
+                        <span>Activate Account</span>
                       </button>
                       <div>{message}</div>
-                  </div>
-                  
-                  <hr className="mt-6 border-b-1 border-blueGray-300" />
-
-                  <div className="text-blueGray-500 text-center">
-                    <Link href="/auth/register" className="p-3">
-                      <small>Create new account</small>
-                    </Link>
-                  </div>
+                    </div>
+                  </form>
                 </div>
-               
               </div>
             </div>
           </div>
