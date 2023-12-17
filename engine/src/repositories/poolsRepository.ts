@@ -37,12 +37,44 @@ async function addPool(pool: Pool): Promise<Pool> {
     return newPool;
 }
 
+function buildSet(pool: any, newPrice: number, tokenNumber: string, minutes: number) {
+
+    const setObj: any = {};
+    const xMinutesAgo = new Date(new Date().getTime() - (minutes * 60 * 1000));
+
+    if (pool[`lastUpdate_${minutes}`] <= xMinutesAgo) {
+
+        const oldPriceX = Number(pool[`price${tokenNumber}_${minutes}`]);
+        const priceChangeX = ((newPrice - oldPriceX) / oldPriceX) * 100;
+
+        setObj[`price${tokenNumber}_${minutes}`] = `${newPrice}`;
+        setObj[`price${tokenNumber}Change_${minutes}`] = priceChangeX && Number.isFinite(priceChangeX) ? priceChangeX : 0;
+        setObj[`lastUpdate_${minutes}`] = new Date();
+    }
+
+    return setObj;
+}
+
+function buildSetFull(pool: Pool, newPrice: number, tokenNumber: string) {
+    
+    if (!["0","1"].includes(tokenNumber)) throw new Error(`Token Number must be 0 or 1.`);
+
+    const oldPrice = Number(tokenNumber === "0" ? pool.price0 : pool.price1);
+    const priceChange = ((newPrice - oldPrice) / oldPrice) * 100;
+
+    const setObj: any = {};
+    setObj[`price${tokenNumber}`] = `${newPrice}`;
+    setObj[`price${tokenNumber}Change`] = priceChange && Number.isFinite(priceChange) ? priceChange : 0;
+    setObj[`lastUpdate`] = new Date();
+
+    const setObj_15 = buildSet(pool, newPrice, tokenNumber, 15);
+    const setObj_60 = buildSet(pool, newPrice, tokenNumber, 60);
+
+    return { ...setObj, ...setObj_15, ...setObj_60};
+}
+
 async function updatePrices(poolData: PoolData) : Promise<Pool | null> {
-
-    const newPrice0 = Number(poolData.token0Price);
-    const newPrice1 = Number(poolData.token1Price);
-
-    const db = await connect();
+    
     let pool = await getPool(poolData.id);
     if (!pool) {
         pool = new Pool({
@@ -58,16 +90,17 @@ async function updatePrices(poolData: PoolData) : Promise<Pool | null> {
         } as Pool);
         pool = await addPool(pool);
     }
+    
+    const newPrice0 = Number(poolData.token0Price);
+    const newPrice1 = Number(poolData.token1Price);
 
-    //TODO: Processamentos adicionais
+    const setObj0 = buildSetFull(pool, newPrice0, "0");
+    const setObj1 = buildSetFull(pool, newPrice1, "1");
 
+    const db = await connect();
     await db.pools.update({
         where: { id: poolData.id },
-        data: {
-            price0: poolData.token0Price,
-            price1: poolData.token1Price,
-            lastUpdate: new Date()
-        }
+        data: { ...setObj0, ...setObj1 }
     });
 
     return getPool(poolData.id);
