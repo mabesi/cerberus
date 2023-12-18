@@ -1,30 +1,54 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 import Navbar from "@/components/Navbars/AuthNavbar.js";
 import FooterSmall from "@/components/Footers/FooterSmall.js";
 
-export default function Activate() {
+export default function Pay() {
 
   const { push } = useRouter();
 
-  const searchParams = useSearchParams();
+  const params = useParams();
 
-  const [code, setCode ] = useState<string>(searchParams.get("code") || "");
-  const [wallet, setWallet ] = useState<string>(searchParams.get("wallet") || "");
+  const wallet : string = typeof params.wallet === "string" ? params.wallet : params.wallet[0];
+
+  const [user, setUser] = useState<any>({});
+  const [plan, setPlan] = useState<any>({
+      name: "Gold",
+      id: "Gold",
+      tokenSymbol: "WETH",
+      tokenAddress: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+      price: "0.001",
+      maxAutomations: 10
+  });
   const [message, setMessage ] = useState<string>("");
 
   useEffect(() => {
-    if (code && code.length === 6 && wallet) {
-      console.log(code, wallet);
-      //push("/pay");
-    }
-  }, [code, wallet]);
+    
+    // carregar user do banco a partir da wallet
+    
+    setUser({
+      name: "Mabesi",
+      wallet,
+      planId: 1
+    });
 
-  function btnActivateClick() {
-    push("/pay");
+    //carregar dados do plano
+
+    setPlan({
+      name: "Gold",
+      id: 1,
+      symbol: "WETH",
+      price: "0.001",
+      maxAutomations: 10
+    });
+
+  }, [wallet]);
+
+  function btnPayClick() {
+    push("/dashboard");
   }
 
   return <>
@@ -48,7 +72,7 @@ export default function Activate() {
                   <div className="text-center mb-3">
 
                     <h6 className="text-blueGray-500 text-sm font-bold">
-                      We sent you a code by email right now. Fill below the 6 numbers.
+                      Below is your plan details.
                     </h6>
                   </div>
                   <form>
@@ -57,25 +81,40 @@ export default function Activate() {
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
                       >
-                        Code
+                        User
                       </label>
-                      <input
-                        type="number"
-                        id="code"
-                        value={code}
-                        onChange={evt => setCode(evt.target.value)}
-                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                        placeholder="000000"
-                      />
+                      <div>
+                          {user.name}<br />{user.wallet}
+                      </div>
+                    </div>
+
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="grid-password"
+                      >
+                        Plan
+                      </label>
+                      <select id="planId" value={plan.id} onChange={evt => setPlan({ ...plan, id: evt.target.value })} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <option value={plan.id}>Gold</option>
+                      </select>
+
+                      <div className="mt-3">
+                        Your last payment was: <strong>Never</strong>
+                      </div>
+
+                      <div className="mt-3">
+                        This plan costs <strong>{plan.price} {plan.symbol}/mo.</strong> and gives you full access to our platform and <strong>{plan.maxAutomations}</strong> automations.
+                      </div>
                     </div>
 
                     <div className="text-center mt-6">
                       <button
                         className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 mt-5 inline-flex items-center"
                         type="button"
-                        onClick={btnActivateClick}
+                        onClick={btnPayClick}
                       >
-                        <span>Activate Account</span>
+                        <span>Pay Now</span>
                       </button>
                       <div>{message}</div>
                     </div>
