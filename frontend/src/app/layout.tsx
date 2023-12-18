@@ -1,7 +1,7 @@
-import type { Metadata } from 'next'
 import '../styles/globals.css'
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "../styles/tailwind.css";
+import type { Metadata } from 'next'
 
 // Verificar procedimentos para internacionalização
 //const inter = Inter({ subsets: ['latin'] })

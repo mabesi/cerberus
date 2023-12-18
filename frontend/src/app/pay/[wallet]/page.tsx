@@ -2,9 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-
 import Navbar from "@/components/Navbars/AuthNavbar.js";
 import FooterSmall from "@/components/Footers/FooterSmall.js";
+import { User } from "commons/models/user";
+import { Plan } from "commons/models/plan";
+import { Status } from "commons/models/status";
+import { ChainId } from "commons/models/chainId";
 
 export default function Pay() {
 
@@ -14,8 +17,8 @@ export default function Pay() {
 
   const wallet : string = typeof params.wallet === "string" ? params.wallet : params.wallet[0];
 
-  const [user, setUser] = useState<any>({});
-  const [plan, setPlan] = useState<any>({
+  const [user, setUser] = useState<User>({} as User);
+  const [plan, setPlan] = useState<Plan>({
       name: "Gold",
       id: "Gold",
       tokenSymbol: "WETH",
@@ -31,16 +34,23 @@ export default function Pay() {
     
     setUser({
       name: "Mabesi",
-      wallet,
-      planId: 1
+      email: "email@gmail.com",
+      status: Status.BLOCKED,
+      network: ChainId.GOERLI,
+      address: wallet,
+      planId: "Gold",
+      privateKey: "0x0001",
+      activationCode: "123456",
+      activationDate: new Date()
     });
 
     //carregar dados do plano
 
     setPlan({
       name: "Gold",
-      id: 1,
-      symbol: "WETH",
+      id: "Gold",
+      tokenSymbol: "WETH",
+      tokenAddress: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
       price: "0.001",
       maxAutomations: 10
     });
@@ -84,7 +94,7 @@ export default function Pay() {
                         User
                       </label>
                       <div>
-                          {user.name}<br />{user.wallet}
+                          {user.name}<br />{user.address}
                       </div>
                     </div>
 
@@ -104,7 +114,7 @@ export default function Pay() {
                       </div>
 
                       <div className="mt-3">
-                        This plan costs <strong>{plan.price} {plan.symbol}/mo.</strong> and gives you full access to our platform and <strong>{plan.maxAutomations}</strong> automations.
+                        This plan costs <strong>{plan.price} {plan.tokenSymbol}/mo.</strong> and gives you full access to our platform and <strong>{plan.maxAutomations}</strong> automations.
                       </div>
                     </div>
 
