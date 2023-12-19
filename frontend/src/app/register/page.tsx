@@ -27,6 +27,15 @@ export default function Register() {
   }
   
   function btnSaveClick() {
+    setMessage("Saving...")
+    if (!user.checkTos) {
+      setMessage("You must read and accept the Terms of Service")  
+      return
+    };
+
+    //TODO: conectar na Metamask
+    //TODO: cadastrar via backend
+
     push("/register/activate");
   }
 

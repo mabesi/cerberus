@@ -58,6 +58,9 @@ export default function Pay() {
   }, [wallet]);
 
   function btnPayClick() {
+    setMessage("Please, authorize our recurring charges (monthly, 1 year authorization). Cancel anytime. ");
+    //TODO: invocar autorização na Metamask (transferFrom)
+    //TODO: chamar função de pagar do backend
     push("/dashboard");
   }
 

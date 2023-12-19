@@ -52,7 +52,7 @@ export default function Login() {
                   <hr className="mt-6 border-b-1 border-blueGray-300" />
 
                   <div className="text-blueGray-500 text-center">
-                    <Link href="/auth/register" className="p-3">
+                    <Link href="/register" className="p-3">
                       <small>Create new account</small>
                     </Link>
                   </div>

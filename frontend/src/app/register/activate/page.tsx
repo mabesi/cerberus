@@ -18,13 +18,25 @@ export default function Activate() {
 
   useEffect(() => {
     if (code && code.length === 6 && wallet) {
-      console.log(code, wallet);
-      //push("/pay");
+      
+      //TODO: ativação via backend
+      if (code === "123456" && wallet === "0x957339c0b3F129B5AF1DF15A2cAb1301f6799f93" )
+        push("/pay/" + wallet);
+
     }
   }, [code, wallet]);
 
   function btnActivateClick() {
-    push("/pay");
+    if (!code || code.length < 6) {
+      setMessage("The activation code must have 6 digits.");
+      return;
+    }
+    setMessage("Activating...");
+    //TODO: ativação via backend
+    if (code === "123456" && wallet === "0x957339c0b3F129B5AF1DF15A2cAb1301f6799f93" )
+      push("/pay/" + wallet);
+    else
+      setMessage("Wrong code!");
   }
 
   return <>
