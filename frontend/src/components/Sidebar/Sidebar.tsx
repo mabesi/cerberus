@@ -35,7 +35,12 @@ export default function Sidebar() {
           href="/"
           className="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0">
           
+          <div className="flex content-center items-center justify-center mb-5">
+            <img src="/img/cerberus.png" width={128} />
+          </div>
+          <div className="flex content-center items-center justify-center mb-5">
             Cerberus
+          </div>
           
         </Link>
         {/* User */}
