@@ -1,5 +1,7 @@
+"use client";
+
 import React from "react";
-import Chart from "chart.js";
+import Chart from "chart.js/auto";
 
 export default function CardLineChart() {
   React.useEffect(() => {
@@ -105,6 +107,9 @@ export default function CardLineChart() {
     };
     var ctx = document.getElementById("line-chart").getContext("2d");
     window.myLine = new Chart(ctx, config);
+    return () => {
+      window.myLine.destroy();
+    }
   }, []);
   return (
     <>

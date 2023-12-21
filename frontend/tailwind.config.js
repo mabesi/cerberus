@@ -70,6 +70,13 @@ module.exports = {
       backgroundSize: {
         full: "100%",
       },
+      colors: {
+        blueGray: colors.slate,
+        coolGray: colors.gray,
+        gray: colors.zinc,
+        trueGray: colors.neutral,
+        warmGray: colors.stone,
+      }
     },
   },
   variants: [

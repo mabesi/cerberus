@@ -9,6 +9,10 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Cerberus Platform',
   description: 'DEX Bot trading platform',
+}
+
+export const viewport = {
+  width: 1,
   themeColor: '#000000'
 }
 
