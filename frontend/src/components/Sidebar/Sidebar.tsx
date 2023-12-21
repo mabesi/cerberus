@@ -2,14 +2,23 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import NotificationDropdown from "@/components/Dropdowns/NotificationDropdown.js";
-import UserDropdown from "@/components/Dropdowns/UserDropdown.js";
+import UserDropdown from "@/components/Dropdowns/UserDropdown";
 
 export default function Sidebar() {
+  
   const [collapseShow, setCollapseShow] = React.useState("hidden");
   const pathname = usePathname();
+  const { push } = useRouter();
+
+  function btnLogoutClick(event: React.MouseEvent<HTMLElement>) {
+    event.preventDefault();
+    localStorage.clear();
+    push("/");
+  }
+
   return <>
     <nav className="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6">
       <div className="md:flex-col md:items-stretch md:min-h-full md:flex-nowrap px-0 flex flex-wrap items-center justify-between w-full mx-auto">
@@ -121,7 +130,7 @@ export default function Sidebar() {
 
                 <i
                   className={
-                    "fas fa-table mr-2 text-sm " +
+                    "fas fa-robot mr-2 text-sm " +
                     (pathname.indexOf("/automations") !== -1
                       ? "opacity-75"
                       : "text-blueGray-300")
@@ -148,6 +157,18 @@ export default function Sidebar() {
                       : "text-blueGray-300")
                   }
                 ></i>{" "}Settings
+              </Link>
+            </li>
+
+            {/* Divider */}
+            <hr className="my-4 md:min-w-full" />
+
+            <li className="items-center">
+              <Link
+                href="#"
+                onClick={btnLogoutClick}
+                className="text-xs uppercase py-3 font-bold block text-blueGray-700 hover:text-blueGray-500" >
+                <i className="fas fa-right-from-bracket mr-2 text-sm text-blueGray-300" ></i>{" "}Logout
               </Link>
             </li>
             
