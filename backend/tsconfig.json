@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "resolveJsonModule": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -10,6 +11,15 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "commons/*": [
+        "../_commons_/*"
+      ]
+    },
+    "rootDirs": [
+      "./",
+      "../_commons_/"
+    ],
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
