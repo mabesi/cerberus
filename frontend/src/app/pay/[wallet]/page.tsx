@@ -23,8 +23,8 @@ export default function Pay() {
   const [plan, setPlan] = useState<Plan>({
     name: "Gold",
     id: "Gold",
-    tokenSymbol: "WETH",
-    tokenAddress: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+    tokenSymbol: "WMATIC",
+    tokenAddress: "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889",
     price: ethers.parseEther("0.001").toString(),
     maxAutomations: 10
   });
@@ -54,7 +54,8 @@ export default function Pay() {
   }, [wallet]);
 
   function btnPayClick() {
-    setMessage("Please, authorize our recurring charges (monthly, 1 year authorization). Cancel anytime. ");
+    console.log(plan.tokenAddress);
+    setMessage("Please, authorize our recurring charges (monthly, 1 year authorization). Cancel anytime.");
     
     startPayment(plan)
       .then(result => {
