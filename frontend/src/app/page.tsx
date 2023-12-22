@@ -1,19 +1,44 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import Link from 'next/link';
 import Navbar from "@/components/Navbars/AuthNavbar.js";
 import FooterSmall from "@/components/Footers/FooterSmall.js";
 
+import { doLogin } from "@/services/Web3Service";
+import { Status } from "commons/models/status";
+
 export default function Login() {
 
   const { push } = useRouter();
   const [message, setMessage ] = useState<string>("");
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      push("/dashboard");
+    }
+  },[]);
+
   function btnLoginClick() {
-    push("/register");
+
+    setMessage("Logging in...")
+    
+    doLogin()
+      .then(jwt => {
+        if (!jwt) return;
+        if (jwt.status === Status.ACTIVE)
+          push ("/dashboard");
+        else if (jwt.status === Status.BLOCKED)
+          push ("/pay/" + jwt.address);
+        else if (jwt.status === Status.NEW)
+          push ("/activate?" + jwt.address);
+        else
+          push("/");
+      })
+      .catch(err => setMessage(err.message))
   }
 
   return <>
