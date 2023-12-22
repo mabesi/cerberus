@@ -34,9 +34,11 @@ export default function Login() {
         else if (jwt.status === Status.BLOCKED)
           push ("/pay/" + jwt.address);
         else if (jwt.status === Status.NEW)
-          push ("/activate?" + jwt.address);
-        else
+          push ("/register/activate?wallet=" + jwt.address);
+        else if (jwt.status === Status.BANNED)
           push("/");
+        else
+          push("/register");
       })
       .catch(err => setMessage(err.message))
   }

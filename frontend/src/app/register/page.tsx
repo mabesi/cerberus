@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbars/AuthNavbar.js";
 import FooterSmall from "@/components/Footers/FooterSmall.js";
 
+import { getWallet } from "@/services/Web3Service";
+
 type User = {
   name: string;
   email: string;
@@ -25,18 +27,36 @@ export default function Register() {
   function onUserChange(evt: React.ChangeEvent<HTMLInputElement>) {
     setuser((prevState: any) => ({ ...prevState, [evt.target.id]: evt.target.value }));
   }
-  
-  function btnSaveClick() {
+
+  async function register() {
+
     setMessage("Saving...")
+    
     if (!user.checkTos) {
       setMessage("You must read and accept the Terms of Service")  
       return
     };
 
-    //TODO: conectar na Metamask
+    let  wallet = localStorage.getItem("wallet");
+
+    if (!wallet) {
+      try {
+        wallet = await getWallet();
+      } catch (err: any) {
+        setMessage(err.message);
+        return;
+      }
+    }
+
+    console.log(wallet);
+
     //TODO: cadastrar via backend
 
-    push("/register/activate");
+    push("/register/activate?wallet=" + wallet);
+  }
+
+  function btnSaveClick() {
+    register();
   }
 
   return <>

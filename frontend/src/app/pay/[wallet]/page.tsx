@@ -8,6 +8,8 @@ import { User } from "commons/models/user";
 import { Plan } from "commons/models/plan";
 import { Status } from "commons/models/status";
 import { ChainId } from "commons/models/chainId";
+import { startPayment } from "@/services/Web3Service";
+import { ethers } from "ethers";
 
 export default function Pay() {
 
@@ -19,19 +21,24 @@ export default function Pay() {
 
   const [user, setUser] = useState<User>({} as User);
   const [plan, setPlan] = useState<Plan>({
-      name: "Gold",
-      id: "Gold",
-      tokenSymbol: "WETH",
-      tokenAddress: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
-      price: "0.001",
-      maxAutomations: 10
+    name: "Gold",
+    id: "Gold",
+    tokenSymbol: "WETH",
+    tokenAddress: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+    price: ethers.parseEther("0.001").toString(),
+    maxAutomations: 10
   });
   const [message, setMessage ] = useState<string>("");
 
   useEffect(() => {
+
+    setMessage("Loading payment info...")
+
+    //TODO: obter JWT
+
+    //TODO: validar info de pagamento
     
     // carregar user do banco a partir da wallet
-    
     setUser({
       name: "Mabesi",
       email: "email@gmail.com",
@@ -44,24 +51,17 @@ export default function Pay() {
       activationDate: new Date()
     });
 
-    //carregar dados do plano
-
-    setPlan({
-      name: "Gold",
-      id: "Gold",
-      tokenSymbol: "WETH",
-      tokenAddress: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
-      price: "0.001",
-      maxAutomations: 10
-    });
-
   }, [wallet]);
 
   function btnPayClick() {
     setMessage("Please, authorize our recurring charges (monthly, 1 year authorization). Cancel anytime. ");
-    //TODO: invocar autorização na Metamask (transferFrom)
-    //TODO: chamar função de pagar do backend
-    push("/dashboard");
+    
+    startPayment(plan)
+      .then(result => {
+        setMessage("Payment authorized. Starting 1st payment...")
+      })
+      .then(result => push("/dashboard"))
+      .catch(err => setMessage(err.response ? err.response.data : err.message));
   }
 
   return <>
@@ -117,7 +117,7 @@ export default function Pay() {
                       </div>
 
                       <div className="mt-3">
-                        This plan costs <strong>{plan.price} {plan.tokenSymbol}/mo.</strong> and gives you full access to our platform and <strong>{plan.maxAutomations}</strong> automations.
+                        This plan costs <strong>{`${ethers.formatEther(plan.price)}`} {plan.tokenSymbol}/mo.</strong> and gives you full access to our platform and <strong>{plan.maxAutomations}</strong> automations.
                       </div>
                     </div>
 

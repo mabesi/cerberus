@@ -2,6 +2,9 @@ import { JWT } from "commons/models/jwt";
 import ConfigService from "./ConfigService";
 import { BrowserProvider } from "ethers";
 import { Status } from "commons/models/status";
+import { Plan } from "commons/models/plan";
+import { Contract } from "ethers";
+import ERC20_ABI from "commons/services/ERC20.json";
 
 function getProvider() {
     if (!window.ethereum) throw new Error(`No Metamask found!`);
@@ -41,7 +44,16 @@ export async function doLogin(): Promise<JWT | undefined> {
         status: Status.ACTIVE,
         userId: "123456"
     } as JWT;
+}
 
+export async function startPayment(plan: Plan): Promise<boolean> {
 
-
+    const provider = getProvider();
+    const signer = await provider.getSigner();
+    const tokenContract = new Contract(plan.tokenAddress, ERC20_ABI, signer);
+    const tx = await tokenContract.approve(ConfigService.CERBERUS_PAY_CONTRACT, BigInt(plan.price) * 12n);
+    
+    await tx.wait();
+    
+    return true;
 }
