@@ -21,17 +21,21 @@ export class AuthController {
 
         const user = await this.userService.addUser(data);
 
-        //TODO: enviar email de confirmação
+        //TODO: enviar email de ativação
         
         return user;
     }
 
     @Post("activate/:wallet/:code")
-    activate(@Param("wallet") wallet: string, @Param("code", ParseIntPipe) code: number): object {
-        return {
-            wallet,
-            code
-        };
+    async activate(@Param("wallet") wallet: string, @Param("code", ParseIntPipe) code: string): Promise<string> {
+
+        const user = await this.userService.activateUser(wallet, code.toString());
+
+        //TODO: enviar email de boas vindas
+
+        //TODO: gerar o JWT
+
+        return "tokenjwt";
     }
 
 }
