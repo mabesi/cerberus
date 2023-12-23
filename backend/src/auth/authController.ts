@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, ParseIntPipe, Post } from "@nestjs/common";
 
 @Controller("auth")
 export class AuthController {
@@ -14,7 +14,7 @@ export class AuthController {
     }
 
     @Post("activate/:wallet/:code")
-    activate(@Param("wallet") wallet, @Param("code") code): object {
+    activate(@Param("wallet") wallet: string, @Param("code", ParseIntPipe) code: number): object {
         return {
             wallet,
             code
