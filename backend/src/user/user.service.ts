@@ -89,7 +89,7 @@ export class UserService {
         if (!user) throw new NotFoundException();
         if (user.status !== Status.BLOCKED) throw new ForbiddenException();
 
-        const db = new dbConnection();
+        const db = await dbConnection();
 
         //TODO: pay via blockchain
 
