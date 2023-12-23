@@ -4,6 +4,7 @@ import dbConnection from "../db";
 import { UserDTO } from "./user.dto";
 import { Status } from "commons/models/status";
 import Config from "../config";
+import { encrypt, decrypt } from "commons/services/cryptoService";
 
 @Injectable()
 export class UserService {
@@ -45,8 +46,7 @@ export class UserService {
             where: {id}
         })
 
-        //TODO: decriptografar a private key
-        //user.privateKey = "";
+        user.privateKey = decrypt(user.privateKey);
         
         return user;
     }
@@ -105,7 +105,7 @@ export class UserService {
         }
 
         if (user.privateKey) {
-            data.privateKey = ""; //TODO: criptografar nova private key
+            data.privateKey = encrypt(user.privateKey);
         }
 
         const updatedUser = await db.users.update({
