@@ -8,6 +8,17 @@ import Config from "../config";
 @Injectable()
 export class UserService {
 
+    static generateToken(len: number) : string {
+
+        const validChars = "0123456789";
+        let token = "";
+        for (let i=0; i<len; i++) {
+            token += validChars[Math.floor(Math.random() * 10)];
+        }
+
+        return token;
+    }
+
     async getUserByWallet(address: string) : Promise<User> {
         
         const db = await dbConnection();
@@ -60,7 +71,7 @@ export class UserService {
                 return db.users.update({
                     where: { id: oldUser.id},
                     data: {
-                        activationCode: "0", //TODO: gerar novo código
+                        activationCode: UserService.generateToken(6),
                         activationDate: new Date()
                     }
                 })
@@ -73,13 +84,38 @@ export class UserService {
                 email: user.email,
                 name: user.name,
                 planId: user.planId,
-                activationCode: "", //TODO: gerar código
+                activationCode: UserService.generateToken(6),
                 activationDate: new Date(),
                 privateKey: "",
                 status: Status.NEW,
                 network: Config.CHAIN_ID
             }
         })
+    }
+
+    async updateUser(id: string, user: UserDTO) : Promise<User> {
+        
+        const db = await dbConnection();
+        
+        const data: any = {
+            address: user.address,
+            email: user.email,
+            name: user.name,
+            status: Status.NEW,
+        }
+
+        if (user.privateKey) {
+            data.privateKey = ""; //TODO: criptografar nova private key
+        }
+
+        const updatedUser = await db.users.update({
+            where: { id },
+            data
+        });
+
+        updatedUser.privateKey = "";
+
+        return updatedUser;
     }
 
     async payUser(address: string) : Promise<User> {
@@ -98,7 +134,7 @@ export class UserService {
             data: { status: Status.ACTIVE }
         })
 
-        updateUser.privateKey = ""
+        updateUser.privateKey = "";
 
         return updateUser;
     }
