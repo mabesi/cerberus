@@ -1,9 +1,15 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post } from "@nestjs/common";
 import { AuthDTO } from "./auth.dto";
 import { UserDTO } from "../user/user.dto";
+import { UserService } from "../user/user.service";
+import { User } from "commons/models/user";
 
 @Controller("auth")
 export class AuthController {
+
+    constructor(private readonly userService: UserService) {
+
+    }
 
     @Post("signin")
     signin(@Body() data: AuthDTO): object {
@@ -11,11 +17,13 @@ export class AuthController {
     }
 
     @Post("signup")
-    signup(@Body() data: UserDTO): object {
+    async signup(@Body() data: UserDTO): Promise<User> {
 
-        //TODO: cadastrar no bd
+        const user = await this.userService.addUser(data);
+
         //TODO: enviar email de confirmação
-        return data;
+        
+        return user;
     }
 
     @Post("activate/:wallet/:code")

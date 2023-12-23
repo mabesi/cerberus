@@ -8,15 +8,15 @@ import Config from "../config";
 @Injectable()
 export class UserService {
 
-    static generateToken(len: number) : string {
+    static generateActivationCode(len: number) : string {
 
         const validChars = "0123456789";
-        let token = "";
+        let code = "";
         for (let i=0; i<len; i++) {
-            token += validChars[Math.floor(Math.random() * 10)];
+            code += validChars[Math.floor(Math.random() * 10)];
         }
 
-        return token;
+        return code;
     }
 
     async getUserByWallet(address: string) : Promise<User> {
@@ -71,7 +71,7 @@ export class UserService {
                 return db.users.update({
                     where: { id: oldUser.id},
                     data: {
-                        activationCode: UserService.generateToken(6),
+                        activationCode: UserService.generateActivationCode(6),
                         activationDate: new Date()
                     }
                 })
@@ -84,7 +84,7 @@ export class UserService {
                 email: user.email,
                 name: user.name,
                 planId: user.planId,
-                activationCode: UserService.generateToken(6),
+                activationCode: UserService.generateActivationCode(6),
                 activationDate: new Date(),
                 privateKey: "",
                 status: Status.NEW,
