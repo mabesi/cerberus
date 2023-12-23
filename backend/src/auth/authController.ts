@@ -3,11 +3,16 @@ import { AuthDTO } from "./auth.dto";
 import { UserDTO } from "../user/user.dto";
 import { UserService } from "../user/user.service";
 import { User } from "commons/models/user";
+import { MailerService } from "@nestjs-modules/mailer";
+import Config from "../config";
 
 @Controller("auth")
 export class AuthController {
 
-    constructor(private readonly userService: UserService) {
+    constructor(
+        private readonly userService: UserService,
+        private readonly mailerService: MailerService
+        ) {
 
     }
 
@@ -21,7 +26,23 @@ export class AuthController {
 
         const user = await this.userService.addUser(data);
 
-        //TODO: enviar email de ativação
+        await this.mailerService.sendMail({
+            to: user.email,
+            subject: `Activate your user on Cerberus`,
+            text: `Hi, ${user.name}!
+
+            Use the link below to finish your signup (copy and paste if the link doesn't work):
+
+            ${Config.SITE_URL}/activate?wallet=${user.address}&code=${user.activationCode}
+
+            Or if you are with the activation page opened, use the code below:
+
+            ${user.activationCode}
+
+            See ya!
+            Cerberus Admin
+            `
+        });
         
         return user;
     }
@@ -31,7 +52,23 @@ export class AuthController {
 
         const user = await this.userService.activateUser(wallet, code.toString());
 
-        //TODO: enviar email de boas vindas
+        await this.mailerService.sendMail({
+            to: user.email,
+            subject: `User Activated, next steps in this email`,
+            text: `Hi, ${user.name}!
+
+            Your user is activated. But before start bot trading, you need to pay the first month in advance.
+
+            Use the link below to make your payment (copy and paste if the link doesn't work):
+
+            ${Config.SITE_URL}/pay/${user.address}
+
+            Or if you are with the website opened, just click in login button again.
+
+            See ya!
+            Cerberus Admin
+            `
+        });
 
         //TODO: gerar o JWT
 
