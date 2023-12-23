@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post } from "@nestjs/common";
 import { AuthDTO } from "./auth.dto";
-import { UserDTO } from "./user.dto";
+import { UserDTO } from "../user/user.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -12,6 +12,9 @@ export class AuthController {
 
     @Post("signup")
     signup(@Body() data: UserDTO): object {
+
+        //TODO: cadastrar no bd
+        //TODO: enviar email de confirmação
         return data;
     }
 
