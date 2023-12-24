@@ -17,6 +17,12 @@ export async function signIn(data: Auth) : Promise<string> {
     return response.data;
 }
 
+export async function signOut() {
+
+    localStorage.clear();
+    window.location.href = "/";
+}
+
 export async function signUp(data: User) {
 
     const response = await axios.post(`${AUTH_URL}/signup`, data);

@@ -7,8 +7,10 @@ import Navbar from "@/components/Navbars/AuthNavbar.js";
 import FooterSmall from "@/components/Footers/FooterSmall.js";
 
 import { getWallet } from "@/services/Web3Service";
+import { signUp } from "@/services/AuthService";
+import { User } from "commons/models/user";
 
-type User = {
+type NewUser = {
   name: string;
   email: string;
   checkTos: boolean;
@@ -17,7 +19,7 @@ type User = {
 export default function Register() {
 
   const { push } = useRouter();
-  const [user, setuser] = useState<User>({
+  const [user, setuser] = useState<NewUser>({
     name: "",
     email: "",
     checkTos: false
@@ -48,11 +50,19 @@ export default function Register() {
       }
     }
 
-    console.log(wallet);
+    try {
+      await signUp({
+        name: user.name,
+        address: wallet,
+        email: user.email,
+        planId: "Gold"
+      } as User)
+  
+      push("/register/activate?wallet=" + wallet);
 
-    //TODO: cadastrar via backend
-
-    push("/register/activate?wallet=" + wallet);
+    } catch (err: any) {
+      setMessage(err.response ? JSON.stringify(err.response.data) : err.message);
+    }
   }
 
   function btnSaveClick() {

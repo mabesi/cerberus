@@ -7,10 +7,9 @@ import FooterSmall from "@/components/Footers/FooterSmall.js";
 import { User } from "commons/models/user";
 import { Plan } from "commons/models/plan";
 import { Status } from "commons/models/status";
-import { ChainId } from "commons/models/chainId";
 import { startPayment } from "@/services/Web3Service";
 import { ethers } from "ethers";
-import { getJwt } from "@/services/AuthService";
+import { getJwt, signOut } from "@/services/AuthService";
 import { getUser, payUser } from "@/services/UserService";
 
 export default function Pay() {
@@ -39,8 +38,7 @@ export default function Pay() {
     const jwt = getJwt();
 
     if (!wallet || !jwt || jwt.address.toUpperCase() !== wallet.toUpperCase()) {
-      localStorage.clear();
-      push("/");
+      signOut();
       return;
     }
 
@@ -52,8 +50,7 @@ export default function Pay() {
         }
         
         if (user.status !== Status.BLOCKED) {
-          localStorage.clear();
-          push("/");
+          signOut();
           return;
         }
 
