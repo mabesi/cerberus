@@ -8,7 +8,7 @@ export default function CardLineChart() {
     const tv = new TradingView.widget({
       "autosize": true,
       "symbol": "BINANCE:BTCUSDT",
-      "interval": "60",
+      "interval": "D",
       "timezone": "Etc/UTC",
       "theme": "dark",
       "style": "1",

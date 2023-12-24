@@ -1,10 +1,10 @@
 import { JWT } from "commons/models/jwt";
 import ConfigService from "./ConfigService";
 import { BrowserProvider } from "ethers";
-import { Status } from "commons/models/status";
 import { Plan } from "commons/models/plan";
 import { Contract } from "ethers";
 import ERC20_ABI from "commons/services/ERC20.json";
+import { Auth, parseJwt, signIn } from "./AuthService";
 
 function getProvider() {
     if (!window.ethereum) throw new Error(`No Metamask found!`);
@@ -33,17 +33,15 @@ export async function doLogin(): Promise<JWT | undefined> {
     const signer = await provider.getSigner();
     const challenge = await signer.signMessage(message);
     
-    console.log(challenge);
+    const token = await signIn({
+        wallet,
+        secret: challenge,
+        timestamp
+    } as Auth);
 
-    //TODO: enviar timestamp, wallet e challenge para o backend
+    localStorage.setItem("token", token);
 
-    return {
-        address: "0x957339c0b3F129B5AF1DF15A2cAb1301f6799f93",
-        name: "Mabesi",
-        planId: "Gold",
-        status: Status.ACTIVE,
-        userId: "123456"
-    } as JWT;
+    return parseJwt(token);
 }
 
 export async function startPayment(plan: Plan): Promise<boolean> {
