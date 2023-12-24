@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, NotAcceptableException, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotAcceptableException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { User } from "commons/models/user";
 import dbConnection from "../db";
 import { UserDTO } from "./user.dto";
@@ -49,7 +49,7 @@ export class UserService {
         
         const db = await dbConnection();
         
-        if (!UserService.isHex(id)) throw new NotAcceptableException(`Invalid hex identifier.`);
+        if (!UserService.isHex(id)) throw new BadRequestException(`Invalid hex identifier.`);
 
         const user = await db.users.findUnique({
             where: {id}

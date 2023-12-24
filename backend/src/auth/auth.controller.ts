@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, NotFoundException, Param, ParseIntPipe, Post, UnauthorizedException } from "@nestjs/common";
 import { AuthDTO } from "./auth.dto";
 import { UserDTO } from "../user/user.dto";
 import { UserService } from "../user/user.service";
@@ -7,6 +7,8 @@ import { MailerService } from "@nestjs-modules/mailer";
 import Config from "../config";
 import { AuthService } from "./auth.service";
 import { JWT } from "commons/models/jwt";
+import { ethers } from "ethers";
+import { Status } from "commons/models/status";
 
 @Controller("auth")
 export class AuthController {
@@ -20,8 +22,42 @@ export class AuthController {
     }
 
     @Post("signin")
-    signin(@Body() data: AuthDTO): object {
-        return data;
+    async signin(@Body() data: AuthDTO): Promise<string> {
+        
+        const aMinuteAgo = Date.now() - (60 * 1000);
+
+        if (data.timestamp < aMinuteAgo) throw new BadRequestException(`Timestamp too old.`);
+
+        const message = Config.AUTH_MSG.replace("<timestamp>", `${data.timestamp}`);
+        let wallet: string;
+
+        try {
+            wallet = ethers.verifyMessage(message, data.secret);
+        } catch (err) {
+            throw new BadRequestException(`Invalid secret.`);
+        }
+
+        if (wallet.toUpperCase() === data.wallet.toUpperCase()) {
+            
+            const user = await this.userService.getUserByWallet(wallet);
+            if (!user) throw new NotFoundException("User not found. Signup first.");
+            if (user.status === Status.BANNED) throw new UnauthorizedException("Banned user.");
+
+            const token = this.authService.createToken({
+                userId: user.id,
+                address: user.address,
+                name: user.name,
+                planId: user.planId,
+                status: user.status
+            } as JWT)
+    
+            return token;
+
+        } else {
+            
+            throw new UnauthorizedException("Wallet and secret doesn't match.");
+        }
+
     }
 
     @Post("signup")
