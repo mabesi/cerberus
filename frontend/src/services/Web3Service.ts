@@ -33,11 +33,15 @@ export async function doLogin(): Promise<JWT | undefined> {
     const signer = await provider.getSigner();
     const challenge = await signer.signMessage(message);
     
+    console.log(wallet);
+    
     const token = await signIn({
-        wallet,
         secret: challenge,
-        timestamp
+        timestamp,
+        wallet
     } as Auth);
+    
+    console.log(token);
 
     localStorage.setItem("token", token);
 

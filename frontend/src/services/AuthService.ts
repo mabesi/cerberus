@@ -17,7 +17,7 @@ export async function signIn(data: Auth) : Promise<string> {
     return response.data;
 }
 
-export async function signUp(data: User) : Promise<User> {
+export async function signUp(data: User) {
 
     const response = await axios.post(`${AUTH_URL}/signup`, data);
     return response.data;
@@ -34,7 +34,14 @@ export async function activate(wallet: string, code: string) : Promise<string> {
 export function parseJwt(token: string) : JWT {
 
     if (!token) throw new Error("Token is required.");
-    const base64Str = token.split(",")[1];
+
+    const base64Str = token.split(".")[1];
     const base64 = base64Str.replace("-", "+").replace("_", "/");
     return JSON.parse(window.atob(base64));
+}
+
+export function getJwt(): JWT | null {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+    return parseJwt(token);
 }

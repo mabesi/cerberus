@@ -28,7 +28,9 @@ export default function Login() {
     
     doLogin()
       .then(jwt => {
+        
         if (!jwt) return;
+
         if (jwt.status === Status.ACTIVE)
           push ("/dashboard");
         else if (jwt.status === Status.BLOCKED)
@@ -39,6 +41,7 @@ export default function Login() {
           push("/");
         else
           push("/register");
+        
       })
       .catch(err => setMessage(err.message))
   }
