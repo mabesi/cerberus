@@ -10,6 +10,8 @@ import { Status } from "commons/models/status";
 import { ChainId } from "commons/models/chainId";
 import { startPayment } from "@/services/Web3Service";
 import { ethers } from "ethers";
+import { getJwt } from "@/services/AuthService";
+import { getUser, payUser } from "@/services/UserService";
 
 export default function Pay() {
 
@@ -34,22 +36,31 @@ export default function Pay() {
 
     setMessage("Loading payment info...")
 
-    //TODO: obter JWT
+    const jwt = getJwt();
 
-    //TODO: validar info de pagamento
-    
-    // carregar user do banco a partir da wallet
-    setUser({
-      name: "Mabesi",
-      email: "email@gmail.com",
-      status: Status.BLOCKED,
-      network: ChainId.GOERLI,
-      address: wallet,
-      planId: "Gold",
-      privateKey: "0x0001",
-      activationCode: "123456",
-      activationDate: new Date()
-    });
+    if (!wallet || !jwt || jwt.address.toUpperCase() !== wallet.toUpperCase()) {
+      localStorage.clear();
+      push("/");
+      return;
+    }
+
+    getUser(jwt.address)
+      .then(user => {
+        if (user.status === Status.ACTIVE) {
+          push("/dashboard");
+          return;
+        }
+        
+        if (user.status !== Status.BLOCKED) {
+          localStorage.clear();
+          push("/");
+          return;
+        }
+
+        setUser(user);
+        setMessage("");
+      })
+      .catch(err => setMessage(err.response ? JSON.stringify(err.response.data) : err.message));
 
   }, [wallet]);
 
@@ -60,9 +71,10 @@ export default function Pay() {
     startPayment(plan)
       .then(result => {
         setMessage("Payment authorized. Starting 1st payment...")
+        payUser();
       })
       .then(result => push("/dashboard"))
-      .catch(err => setMessage(err.response ? err.response.data : err.message));
+      .catch(err => setMessage(err.response ? JSON.stringify(err.response.data) : err.message));
   }
 
   return <>
