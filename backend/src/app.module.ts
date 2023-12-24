@@ -6,6 +6,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import Config from './config';
 import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
+import { AuthService } from './auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -19,6 +21,6 @@ import { UserService } from './user/user.service';
     AuthModule
   ],
   controllers: [AppController, UserController],
-  providers: [AppService, UserService],
+  providers: [AppService, UserService, AuthService, JwtService],
 })
 export class AppModule {}

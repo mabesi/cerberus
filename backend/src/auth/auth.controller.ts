@@ -24,7 +24,7 @@ export class AuthController {
     @Post("signin")
     async signin(@Body() data: AuthDTO): Promise<string> {
         
-        const aMinuteAgo = Date.now() - (60 * 1000);
+        const aMinuteAgo = Date.now() - (600 * 1000);
 
         if (data.timestamp < aMinuteAgo) throw new BadRequestException(`Timestamp too old.`);
 
@@ -37,27 +37,22 @@ export class AuthController {
             throw new BadRequestException(`Invalid secret.`);
         }
 
-        if (wallet.toUpperCase() === data.wallet.toUpperCase()) {
-            
-            const user = await this.userService.getUserByWallet(wallet);
-            if (!user) throw new NotFoundException("User not found. Signup first.");
-            if (user.status === Status.BANNED) throw new UnauthorizedException("Banned user.");
-
-            const token = this.authService.createToken({
-                userId: user.id,
-                address: user.address,
-                name: user.name,
-                planId: user.planId,
-                status: user.status
-            } as JWT)
-    
-            return token;
-
-        } else {
-            
+        if (wallet.toUpperCase() !== data.wallet.toUpperCase()) 
             throw new UnauthorizedException("Wallet and secret doesn't match.");
-        }
 
+        const user = await this.userService.getUserByWallet(wallet);
+        if (!user) throw new NotFoundException("User not found. Signup first.");
+        if (user.status === Status.BANNED) throw new UnauthorizedException("Banned user.");
+
+        const token = this.authService.createToken({
+            userId: user.id,
+            address: user.address,
+            name: user.name,
+            planId: user.planId,
+            status: user.status
+        } as JWT)
+
+        return token;
     }
 
     @Post("signup")
