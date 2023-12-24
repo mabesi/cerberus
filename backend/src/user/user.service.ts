@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { ConflictException, ForbiddenException, Injectable, NotAcceptableException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { User } from "commons/models/user";
 import dbConnection from "../db";
 import { UserDTO } from "./user.dto";
@@ -8,6 +8,11 @@ import { encrypt, decrypt } from "commons/services/cryptoService";
 
 @Injectable()
 export class UserService {
+
+    static isHex(text: string) : boolean {
+        const reg=/[0-9A-Fa-f]{24}/g;
+        return reg.test(text);
+    }
 
     static generateActivationCode(len: number) : string {
 
@@ -33,6 +38,8 @@ export class UserService {
             }
         })
 
+        if (!user) throw new NotFoundException();
+
         user.privateKey = "";
         
         return user;
@@ -42,9 +49,13 @@ export class UserService {
         
         const db = await dbConnection();
         
+        if (!UserService.isHex(id)) throw new NotAcceptableException(`Invalid hex identifier.`);
+
         const user = await db.users.findUnique({
             where: {id}
         })
+
+        if (!user) throw new NotFoundException();
 
         user.privateKey = decrypt(user.privateKey);
         
@@ -101,7 +112,6 @@ export class UserService {
             address: user.address,
             email: user.email,
             name: user.name,
-            status: Status.NEW,
         }
 
         if (user.privateKey) {
@@ -112,6 +122,8 @@ export class UserService {
             where: { id },
             data
         });
+
+        if (!updatedUser) throw new NotFoundException();
 
         updatedUser.privateKey = "";
 
@@ -129,14 +141,16 @@ export class UserService {
 
         //TODO: pay via blockchain
 
-        const updateUser = await db.users.update({
+        const updatedUser = await db.users.update({
             where: {id: user.id},
             data: { status: Status.ACTIVE }
         })
 
-        updateUser.privateKey = "";
+        if (!updatedUser) throw new NotFoundException();
 
-        return updateUser;
+        updatedUser.privateKey = "";
+
+        return updatedUser;
     }
 
     async activateUser(wallet: string, code: string) : Promise<User> {
