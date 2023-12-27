@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { UserService } from "../src/user/user.service";
+import { UserService } from "../../src/user/user.service";
 import { newUserMock, blockedUserMock, activeUserMock } from "./user.service.mock";
-import { prismaMock } from "./db.mock";
+import { prismaMock } from "../db.mock";
 import { users } from "commons/data";
 import { UserDTO } from "src/user/user.dto";
 import { Status } from "commons/models/status";

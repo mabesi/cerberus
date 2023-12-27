@@ -1,12 +1,8 @@
 import { Body, Controller, ForbiddenException, Get, Headers, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { UserDTO } from "./user.dto";
 import { UserService } from "./user.service";
-import { AuthGuard } from "src/auth/auth.guard";
-import { AuthService } from "src/auth/auth.service";
-// import { AuthDTO } from "../auth/auth.dto";
-// import { User } from "commons/models/user";
-// import { MailerService } from "@nestjs-modules/mailer";
-// import Config from "../config";
+import { AuthGuard } from "../auth/auth.guard";
+import { AuthService } from "../auth/auth.service";
 
 @Controller("users")
 export class UserController {
