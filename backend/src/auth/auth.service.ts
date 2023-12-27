@@ -22,14 +22,12 @@ export class AuthService {
 
     async checkToken(token: string) {
 
-        console.log(token);
-
         try {
             return this.jwtService.verify(token.replace("Bearer ", ""), {
                 secret: Config.JWT_SECRET
             });
         } catch (err) {
-            console.error(err);
+            // console.error(err);
             throw new UnauthorizedException("Invalid JWT.");
         }
     }
