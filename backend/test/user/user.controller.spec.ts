@@ -26,14 +26,37 @@ describe("UserController Tests", () => {
         expect(UserController).toBeDefined();
     })
     
-    it("Should get user", async () => {
+    it("Should get user by wallet", async () => {
         const result = await userController.getUser("fakeauthorization", activeUserMock.address);
         expect(result.address).toEqual(activeUserMock.address);
+    })
+
+    it("Should NOT get user by wallet", async () => {
+        await expect(userController.getUser("fakeauthorization", "0x987654"))
+        .rejects
+        .toEqual(new ForbiddenException());
+    })
+
+    it("Should get user by id", async () => {
+        const result = await userController.getUser("fakeauthorization", activeUserMock.id);
+        expect(result.id).toEqual(activeUserMock.id);
+    })
+
+    it("Should NOT get user by id", async () => {
+        await expect(userController.getUser("fakeauthorization", "789abc"))
+        .rejects
+        .toEqual(new ForbiddenException());
     })
 
     it("Should update user", async () => {
         const result = await userController.updateUser("fakeauthorization", activeUserMock.id, {...activeUserMock} as UserDTO);
         expect(result.id).toEqual(activeUserMock.id);
+    })
+
+    it("Should NOT update user (id doesn't match)", async () => {
+        await expect(userController.updateUser("fakeauthorization", "987abc", {...activeUserMock} as UserDTO))
+        .rejects
+        .toEqual(new ForbiddenException());
     })
 
     it("Should pay user", async () => {
