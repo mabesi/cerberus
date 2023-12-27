@@ -10,7 +10,7 @@ import { encrypt, decrypt } from "commons/services/cryptoService";
 export class UserService {
 
     static isHex(text: string, ) : boolean {
-        const reg=/[0-9A-Fa-f]+/g;
+        const reg=/[0-9A-Fa-f]{6,24}/g;
         return reg.test(text);
     }
 
@@ -115,9 +115,7 @@ export class UserService {
             data
         });
 
-        if (!updatedUser) throw new NotFoundException();
-
-        updatedUser.privateKey = "";
+        if (updatedUser) updatedUser.privateKey = "";
 
         return updatedUser;
     }
@@ -126,7 +124,6 @@ export class UserService {
 
         const user = await this.getUserByWallet(address);
 
-        if (!user) throw new NotFoundException();
         if (user.status !== Status.BLOCKED) throw new ForbiddenException();
 
         //TODO: pay via blockchain
@@ -136,8 +133,6 @@ export class UserService {
             data: { status: Status.ACTIVE }
         })
 
-        if (!updatedUser) throw new NotFoundException();
-
         updatedUser.privateKey = "";
 
         return updatedUser;
@@ -146,8 +141,9 @@ export class UserService {
     async activateUser(wallet: string, code: string) : Promise<User> {
 
         const user = await this.getUserByWallet(wallet);
-        if (!user) throw new NotFoundException();
+
         if (user.status !== Status.NEW) return user;
+
         if (user.activationCode !== code)
             throw new UnauthorizedException(`Wrong activation code.`);
 
