@@ -21,6 +21,11 @@ export const blockedUserMock = {
     status: Status.BLOCKED,
 } as users;
 
+export const bannedUserMock = {
+    ...newUserMock,
+    status: Status.BANNED,
+} as users;
+
 export const activeUserMock = {
     ...newUserMock,
     status: Status.ACTIVE,

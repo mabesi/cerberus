@@ -29,6 +29,7 @@ export class AuthController {
         if (data.timestamp < aMinuteAgo) throw new BadRequestException(`Timestamp too old.`);
 
         const message = Config.AUTH_MSG.replace("<timestamp>", `${data.timestamp}`);
+        
         let wallet: string;
 
         try {
@@ -41,7 +42,7 @@ export class AuthController {
             throw new UnauthorizedException("Wallet and secret doesn't match.");
 
         const user = await this.userService.getUserByWallet(wallet);
-        if (!user) throw new NotFoundException("User not found. Signup first.");
+        
         if (user.status === Status.BANNED) throw new UnauthorizedException("Banned user.");
 
         const token = this.authService.createToken({

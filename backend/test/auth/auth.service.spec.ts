@@ -41,6 +41,5 @@ describe("AuthService Tests", () => {
             .rejects
             .toEqual(new UnauthorizedException("Invalid JWT."));        
     })
-
     
 })

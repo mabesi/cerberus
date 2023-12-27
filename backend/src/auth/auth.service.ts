@@ -27,7 +27,6 @@ export class AuthService {
                 secret: Config.JWT_SECRET
             });
         } catch (err) {
-            // console.error(err);
             throw new UnauthorizedException("Invalid JWT.");
         }
     }
