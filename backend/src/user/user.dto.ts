@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { IsAlphanumeric, IsEmail, IsInt, IsOptional, IsString, Length } from "class-validator";
 
 import { Status } from "commons/models/status";

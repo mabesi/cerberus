@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { IsAlphanumeric, IsInt, IsString, Length } from "class-validator";
 
 export class AuthDTO {

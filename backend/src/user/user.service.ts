@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotAcceptableException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { User } from "commons/models/user";
-import dbConnection from "../db";
+import db from "../db";
 import { UserDTO } from "./user.dto";
 import { Status } from "commons/models/status";
 import Config from "../config";
@@ -9,8 +9,8 @@ import { encrypt, decrypt } from "commons/services/cryptoService";
 @Injectable()
 export class UserService {
 
-    static isHex(text: string) : boolean {
-        const reg=/[0-9A-Fa-f]{24}/g;
+    static isHex(text: string, ) : boolean {
+        const reg=/[0-9A-Fa-f]+/g;
         return reg.test(text);
     }
 
@@ -26,8 +26,6 @@ export class UserService {
     }
 
     async getUserByWallet(address: string) : Promise<User> {
-        
-        const db = await dbConnection();
         
         const user = await db.users.findFirst({
             where: {
@@ -47,8 +45,6 @@ export class UserService {
 
     async getUser(id: string): Promise<User> {
         
-        const db = await dbConnection();
-        
         if (!UserService.isHex(id)) throw new BadRequestException(`Invalid hex identifier.`);
 
         const user = await db.users.findUnique({
@@ -63,8 +59,6 @@ export class UserService {
     }
 
     async addUser(user: UserDTO) : Promise<User> {
-        
-        const db = await dbConnection();
         
         const oldUser = await db.users.findFirst({
             where: {
@@ -106,8 +100,6 @@ export class UserService {
 
     async updateUser(id: string, user: UserDTO) : Promise<User> {
         
-        const db = await dbConnection();
-        
         const data: any = {
             address: user.address,
             email: user.email,
@@ -137,8 +129,6 @@ export class UserService {
         if (!user) throw new NotFoundException();
         if (user.status !== Status.BLOCKED) throw new ForbiddenException();
 
-        const db = await dbConnection();
-
         //TODO: pay via blockchain
 
         const updatedUser = await db.users.update({
@@ -165,8 +155,6 @@ export class UserService {
 
         if (user.activationDate < tenMinutesAgo)
             throw new UnauthorizedException(`Activation code expired.`);
-
-        const db = await dbConnection();
 
         const updatedUser = await db.users.update({
             where: {id: user.id},
