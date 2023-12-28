@@ -18,6 +18,12 @@ export class PoolController {
     async getPoolSymbols() {
         return this.poolService.getPoolSymbols();
     }
+        
+    @UseGuards(AuthGuard)
+    @Get("top")
+    async getTopPools() {
+        return this.poolService.getTopPools();
+    } 
     
     @UseGuards(AuthGuard)
     @Get(":id")
@@ -34,11 +40,5 @@ export class PoolController {
         if (!pool) throw new NotFoundException();
         return pool;
     }
-    
-    @UseGuards(AuthGuard)
-    @Get("top")
-    async getTopPools() {
-        return this.poolService.getTopPools();
-    }    
 
 }
