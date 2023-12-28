@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.23;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 contract CerberusPay is Ownable, Pausable, ReentrancyGuard {
@@ -13,18 +13,13 @@ contract CerberusPay is Ownable, Pausable, ReentrancyGuard {
     uint public monthlyAmount = 0.001 ether;
     uint private constant thirtyDaysInSeconds = 30 * 24 * 60 * 60;
 
-    mapping(address => uint) public payments; // customer => next payment
+    mapping(address => uint) public payments;//customer => next payment
     address[] public customers;
 
-    event Paid(
-        address indexed customer,
-        uint date,
-        uint amount
-    );
+    event Paid(address indexed customer, uint date, uint amount);
 
     constructor() Ownable(msg.sender) {
-        //acceptedToken = IERC20(); //Mumbai WMATIC
-        acceptedToken = IERC20(0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6); //Goerli WETH
+        acceptedToken = IERC20(0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6);//Goerli WETH
     }
 
     function pause() public onlyOwner {
@@ -35,7 +30,7 @@ contract CerberusPay is Ownable, Pausable, ReentrancyGuard {
         _unpause();
     }
 
-    function getCustomers() external view returns(address[] memory) {
+    function getCustomers() external view returns(address[] memory){
         return customers;
     }
 
@@ -54,23 +49,24 @@ contract CerberusPay is Ownable, Pausable, ReentrancyGuard {
     }
 
     function pay(address customer) external onlyOwner whenNotPaused {
-
         bool thirtyDaysHavePassed = payments[customer] <= block.timestamp;
         bool firstPayment = payments[customer] == 0;
         bool hasAmount = acceptedToken.balanceOf(customer) >= monthlyAmount;
         bool hasAllowance = acceptedToken.allowance(customer, address(this)) >= monthlyAmount;
         bool timeToPay = thirtyDaysHavePassed || firstPayment;
 
-        if (!timeToPay) return;
+        if(!timeToPay) return;
 
-        if (!hasAmount || !hasAllowance)
+        if(!hasAmount || !hasAllowance)
             revert("Insufficient balance and/or allowance");
 
-        if (firstPayment) customers.push(customer);
-        payments[customer] = block.timestamp + thirtyDaysInSeconds;
         acceptedToken.transferFrom(customer, address(this), monthlyAmount);
+
+        if(firstPayment)
+            customers.push(customer);
+
+        payments[customer] = block.timestamp + thirtyDaysInSeconds;
 
         emit Paid(customer, block.timestamp, monthlyAmount);
     }
-
 }
