@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Pool from "commons/models/pool";
+import { getTopPools } from "@/services/PoolService";
 
 // components
 
@@ -8,7 +9,9 @@ export default function CardTopPools() {
   const [pools, setPools] = useState<Pool[]>([]);
 
   useEffect(() => {
-    //TODO: carregar da API
+    getTopPools()
+      .then(pools => setPools(pools))
+      .catch(err => console.error(err));
   },[]);
 
   return (
@@ -40,32 +43,19 @@ export default function CardTopPools() {
               </tr>
             </thead>
             <tbody>
-            <tr>
-                    <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
-                      BTCUSDT 0.3%
-                    </th>
-                    <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                      <i className="fas fa-arrow-up text-emerald-500 mr-4" ></i>
-                      10
-                    </td>
-                    <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                      <i className="fas fa-arrow-down text-red-500 mr-4" ></i>
-                      20
-                    </td>
-                  </tr>
               {
                 pools && pools.map(p => (
                   <tr>
                     <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
-                      {p.symbol} (p.fee / 10000)%
+                      {p.symbol} ({p.fee / 10000}%)
                     </th>
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
                       <i className="fas fa-arrow-up text-emerald-500 mr-4" ></i>
-                      {p.price0Change_60}
+                      {p.price0Change_60?.toFixed(2)}
                     </td>
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
                       <i className="fas fa-arrow-down text-red-500 mr-4" ></i>
-                      {p.price1Change_60}
+                      {p.price1Change_60?.toFixed(2)}
                     </td>
                   </tr>
                 ))
