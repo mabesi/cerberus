@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import Pool from "commons/models/pool";
 import db from "../db";
 import { Prisma } from "commons/data";
@@ -9,16 +9,18 @@ type SymbolArr = Array<{ _id: string }>;
 @Injectable()
 export class PoolService {
 
-    async getPool(id: string) : Promise<Pool | null> {
+    async getPool(id: string) : Promise<Pool> {
         
         const pool = await db.pools.findUnique({
             where: { id }
         });
 
+        if(!pool) throw new NotFoundException();
+
         return pool;
     }
 
-    async searchPool(symbol: string, fee: number) : Promise<Pool | null> {
+    async searchPool(symbol: string, fee: number) : Promise<Pool> {
 
         const pool = await db.pools.findFirst({
             where: {
@@ -29,6 +31,8 @@ export class PoolService {
                 fee
             }
         })
+
+        if(!pool) throw new NotFoundException();
 
         return pool;
     }
@@ -94,9 +98,9 @@ export class PoolService {
         })
 
         const topPools = [...top0Pools, ...top1Pools];
-        const pools: Pool[] = topPools.sort((a, b) => b.topChange - a.topChange).slice(5);
+        const pools: Pool[] = topPools.sort((a, b) => b.topChange - a.topChange).slice(0, 5);
 
         return pools;
     }
-    
+
 }

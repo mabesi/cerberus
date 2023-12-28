@@ -21,7 +21,7 @@ export class PoolController {
         
     @UseGuards(AuthGuard)
     @Get("top")
-    async getTopPools() {
+    async topPools() {
         return this.poolService.getTopPools();
     } 
     
