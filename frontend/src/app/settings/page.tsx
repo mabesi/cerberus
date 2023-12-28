@@ -8,7 +8,7 @@ import { getJwt } from "@/services/AuthService";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import AdminNavbar from "@/components/Navbars/AdminNavbar";
 import FooterAdmin from "@/components/Footers/FooterAdmin";
-import Alert from "@/components/Alert";
+import Alert, { AlertProps } from "@/components/Alert";
 import { User } from "commons/models/user";
 
 export default function Automations() {
@@ -16,9 +16,12 @@ export default function Automations() {
     const { push } = useRouter();
 
     const [user, setUser] = useState<User>({} as User);
-    const [error, setError] = useState<string>("");
-    const [message, setMessage] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const [alert, setAlert] = useState<AlertProps>({show: false, type: "", message: ""});
+    const onCloseAlert = () => {
+        setAlert({show: false, type: "", message: ""});
+    }
 
     useEffect(() => {
         
@@ -30,7 +33,11 @@ export default function Automations() {
         
         getUser(jwt.address)
             .then(user => setUser({...user, privateKey: ""}))
-            .catch(err => setError(err.response ? err.response.data : err.message));
+            .catch(err => setAlert({
+                show: true,
+                type: "error",
+                message: err.response ? err.response.data.message.toString() : err.message.toString()
+            }));
 
     },[]);
 
@@ -52,10 +59,19 @@ export default function Automations() {
             .then(result => {
                 setUser({...user, privateKey: ""});
                 setIsLoading(false);
-                setMessage("Settings saved successfully!")
+                setAlert({
+                    show: true,
+                    type: "info",
+                    message: "Settings saved successfully!"
+                })
             })
             .catch(err => {
-                setError(err.response ? err.response.data : err.message);
+                console.log(err);
+                setAlert({
+                    show: true,
+                    type: "error",
+                    message: err.response ? err.response.data.message.toString() : err.message.toString()
+                })
                 setIsLoading(false);
             });
     }
@@ -89,11 +105,9 @@ export default function Automations() {
                         </div>
                         </div>
                         <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
-                        {
-                            message || error
-                            ? <Alert isError={!message} message={ error ? error : message } />
-                            : <></>
-                        }
+
+                        <Alert show={alert.show} type={alert.type} message={alert.message} onCloseAlert={onCloseAlert} />
+
                         <form>
                             <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
                             User Information
