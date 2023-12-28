@@ -11,7 +11,7 @@ import FooterAdmin from "@/components/Footers/FooterAdmin";
 import Alert, { AlertProps } from "@/components/Alert";
 import { User } from "commons/models/user";
 
-export default function Automations() {
+export default function Settings() {
 
     const { push } = useRouter();
 
@@ -71,11 +71,10 @@ export default function Automations() {
                     show: true,
                     type: "error",
                     message: err.response ? err.response.data.message.toString() : err.message.toString()
-                })
+                });
                 setIsLoading(false);
             });
     }
-
 
   return (
     <>
