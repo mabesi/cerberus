@@ -6,7 +6,8 @@
   "scripts": {
     "compile": "npx hardhat compile",
     "test": "npx hardhat test",
-    "deploy": "npx hardhat run scripts/deploy.ts --network goerli"
+    "deploy": "npx hardhat run scripts/deploy.ts --network goerli",
+    "verify": "npx hardhat verify --network goerli"
   },
   "keywords": [],
   "author": "",
