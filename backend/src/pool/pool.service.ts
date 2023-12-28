@@ -73,7 +73,7 @@ export class PoolService {
             take: 5,
             where: {
                 price0Change_60: {gt: 0},
-                price1Change_60: {lt: 0},
+                price1Change_60: {lt: 0, gt: -100},
                 lastUpdate_60: {gt: oneHourAgo}
             },
             orderBy: { price0Change_60: Prisma.SortOrder.desc }
@@ -87,7 +87,7 @@ export class PoolService {
             take: 5,
             where: {
                 price1Change_60: {gt: 0},
-                price0Change_60: {lt: 0},
+                price0Change_60: {lt: 0, gt: -100},
                 lastUpdate_60: {gt: oneHourAgo}
             },
             orderBy: { price1Change_60: Prisma.SortOrder.desc }
