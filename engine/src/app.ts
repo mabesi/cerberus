@@ -1,7 +1,7 @@
 console.log(`Initializing apps...`);
 
 import monitorInit from "./monitor";
-//monitorInit();
+monitorInit();
 
 import payInit from "./pay";
 payInit();

@@ -1,8 +1,8 @@
 import ISeeder from "./ISeeder";
 import tokensRepository from "../repositories/tokensRepository";
 import CFG from "../config"
-import { TokenData } from "../services/uniswapTypes";
-import { getTokens } from "../services/uniswapService";
+import { TokenData } from "../../services/uniswapTypes";
+import { getTokens } from "../../services/uniswapService";
 
 export class TokensSeeder implements ISeeder {
     

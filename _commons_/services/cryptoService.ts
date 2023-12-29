@@ -1,6 +1,8 @@
 const aes = require("aes-js");
 import ConfigBase from "../configBase";
 
+console.log(ConfigBase.AES_KEY);
+
 const key = aes.utils.utf8.toBytes(ConfigBase.AES_KEY);
 
 if (key.length !== 32) throw new Error(`Invalid key size for AES. Must be 256-bit / 32 bytes.`);

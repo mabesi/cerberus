@@ -1,9 +1,6 @@
 import * as dotenv from "dotenv";
 
 dotenv.config();
-
-console.log(`AES_KEY: ` + process.env.AES_KEY);
-
 export default class ConfigBase {
     //system
     static NODE_ENV: string = `${process.env.NODE_ENV || "development"}`;
