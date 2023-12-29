@@ -5,6 +5,7 @@ import { UserDTO } from "./user.dto";
 import { Status } from "commons/models/status";
 import Config from "../config";
 import { encrypt, decrypt } from "commons/services/cryptoService";
+import { pay } from "commons/services/cerberusPayService";
 
 @Injectable()
 export class UserService {
@@ -126,7 +127,7 @@ export class UserService {
 
         if (user.status !== Status.BLOCKED) throw new ForbiddenException();
 
-        //TODO: pay via blockchain
+        await pay(user.address);
 
         const updatedUser = await db.users.update({
             where: {id: user.id},

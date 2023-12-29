@@ -7,6 +7,8 @@ import { UserDTO } from "src/user/user.dto";
 import { Status } from "commons/models/status";
 import { BadRequestException, ConflictException, ForbiddenException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 
+jest.mock("commons/services/cerberusPayService.ts");
+
 describe("UserService Tests", () => {
 
     let userService: UserService;
