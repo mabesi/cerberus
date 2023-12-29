@@ -2,6 +2,8 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
+console.log(`AES_KEY: ` + process.env.AES_KEY);
+
 export default class ConfigBase {
     //system
     static NODE_ENV: string = `${process.env.NODE_ENV || "development"}`;
@@ -22,8 +24,7 @@ export default class ConfigBase {
 
     //blockchain
     static CERBERUS_PAY_CONTRACT: string = `${process.env.CERBERUS_PAY_CONTRACT}`;
-    static INFURA_NETWORK: string = `${process.env.INFURA_NETWORK}`;
-    static INFURA_API_KEY: string = `${process.env.INFURA_API_KEY}`;
+    static RPC_NODE: string = `${process.env.RPC_NODE || "http://127.0.0.1:8545"}`;
     static ADMIN_PRIVATE_KEY: string = `${process.env.ADMIN_PRIVATE_KEY}`;
 
     //security
@@ -31,4 +32,6 @@ export default class ConfigBase {
     static JWT_SECRET: string = `${process.env.JWT_SECRET}`;
     static JWT_EXPIRES: number = parseInt(`${process.env.JWT_EXPIRES}`);
     static AES_KEY: string = `${process.env.AES_KEY}`;
+
+    static UNISWAP_GRAPH_URL: string = `${process.env.UNISWAP_GRAPH_URL}`;
 }

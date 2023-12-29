@@ -28,6 +28,8 @@ export default class Config extends ConfigBase {
     static UNISWAP_GRAPH_URL : string = `${process.env.UNISWAP_GRAPH_URL}`;
     // Update Interval
     static MONITOR_INTERVAL : number = parseInt(`${process.env.MONITOR_INTERVAL}`);
+    // Payment Interval
+    static CHARGE_INTERVAL : number = parseInt(`${process.env.CHARGE_INTERVAL}`);
     // Total Pool Count
     static POOL_COUNT : number = parseInt(`${process.env.POOL_COUNT}`);
     // WebSocket Server
