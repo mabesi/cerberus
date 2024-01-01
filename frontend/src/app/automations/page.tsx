@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 
 import Sidebar from "@/components/Sidebar/Sidebar";
 import AdminNavbar from "@/components/Navbars/AdminNavbar";
@@ -9,6 +10,11 @@ import FooterAdmin from "@/components/Footers/FooterAdmin";
 export default function Automations() {
 
   const color: string = "dark";
+  const { push } = useRouter();
+
+  function btnNewAutomationClick() {
+    push("/automations/new");
+  }
 
   return (
     <>
@@ -31,7 +37,7 @@ export default function Automations() {
                 <button
                     className="bg-lightBlue-600 active:bg-lightBlue-500 text-white font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150 absolute right-0"
                     type="button"
-                    // onClick={btnSaveClick}
+                    onClick={btnNewAutomationClick}
                 >
                 {
                     // isLoading
