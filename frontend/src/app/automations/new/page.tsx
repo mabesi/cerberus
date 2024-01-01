@@ -11,6 +11,8 @@ import Automation from "commons/models/automation";
 import { ChainId } from "commons/models/chainId";
 import { Exchange } from "commons/models/exchange";
 import RadioGroup from "@/components/RadioGroup";
+import PoolInput from "./PoolInput";
+import Pool from "commons/models/pool";
 
 export default function NewAutomation() {
 
@@ -26,6 +28,7 @@ export default function NewAutomation() {
     } as Automation;
 
     const [automation, setAutomation] = useState<Automation>(DEFAULT_AUTOMATION);
+    const [pool, setPool] = useState<Pool>({} as Pool);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const [alertMessage, setAlertMessage] = useState<AlertProps>({show: false, type: "", message: ""});
@@ -45,17 +48,37 @@ export default function NewAutomation() {
         setAutomation((prevState: any) => ({...prevState, [evt.target.id]: evt.target.value}));
     }
 
+    function onPoolChange(pool: Pool | null) {
+        setAutomation((prevState: any) => ({...prevState, poolId: pool ? pool.id : null}));
+        setPool(pool || {} as Pool);
+    }
+
+    function onError(error: string) {
+        setAlertMessage({show: true, type: "error", message: error});
+        setIsLoading(false);
+    } 
+
     function btnSaveClick() {
+
+        if (!automation.name) {
+            onError("The automation name is required.");
+            return;
+        }
+        if (!automation.poolId) {
+            onError("The automation pool is required.");
+            return;
+        }
 
         if (!confirm("This action will consume some wei ('approve' function).\nAre you sure?")) return;
         
         onCloseAlert();
         setIsLoading(true);
-
+        
         alert(JSON.stringify(automation));
         setAlertMessage({show: true, type: "error", message: "Testando o componente de mensagem de alerta!"});
         
         //TODO: salvar a automação
+        setIsLoading(false);
     }
 
   return (
@@ -125,6 +148,8 @@ export default function NewAutomation() {
                             <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
                             Pool
                             </h6>
+
+                            <PoolInput poolId={automation.poolId} onError={onError} onChange={onPoolChange} />
 
                             <hr className="mt-6 border-b-1 border-blueGray-300" />
 
