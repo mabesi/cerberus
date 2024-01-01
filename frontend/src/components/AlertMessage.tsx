@@ -4,10 +4,10 @@ export type AlertProps = {
     show: boolean;
     type: string;
     message: string | { message: string };
-    onCloseAlert?: () => void
+    onCloseAlert?: ()=>void;
 }
 
-function Alert(props: AlertProps) {
+function AlertMessage(props: AlertProps) {
 
     function alertType() : string {
         if (props.type === "info")
@@ -35,9 +35,9 @@ function Alert(props: AlertProps) {
         if (props.type === "info")
             return "fa-bell";
         else if (props.type === "warn")
-            return "fa-bell-exclamation";
+            return "fa-circle-exclamation";
         else if (props.type === "error")
-            return "fa-radiation";
+            return "fa-circle-radiation";
         else
             return "fa-bell";
     }
@@ -73,4 +73,4 @@ function Alert(props: AlertProps) {
     )
 }
 
-export default Alert;
+export default AlertMessage;

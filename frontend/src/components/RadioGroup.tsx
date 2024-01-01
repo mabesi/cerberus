@@ -4,6 +4,7 @@ import React from "react";
 
 type Props = {
     id: string;
+    title?: string;
     textOn: string;
     textOff: string;
     isOn: boolean;
@@ -20,6 +21,17 @@ function RadioGroup(props: Props) {
     }
 
     return (
+        <>
+        {
+            props.title
+            ?
+            <div className="flex flex-wrap mx-4 w-full rounded-lg text-gray-900">
+                <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                    htmlFor="name">{props.title}</label>
+            </div>
+            :<></>
+        }
+
         <div className="flex flex-wrap mx-4 bg-white w-full border-2 border-gray-50 rounded-lg text-gray-900">
             <div className="w-full lg:w-6/12">
                 <div className="flex items-center pl-3">
@@ -30,6 +42,7 @@ function RadioGroup(props: Props) {
                         </label>
                 </div>
             </div>
+
             <div className="w-full lg:w-6/12">
                 <div className="flex items-center pl-3">
                     <input id={RADIO_OFF} type="radio" checked={!props.isOn} onChange={onChange} name={props.id} 
@@ -39,7 +52,9 @@ function RadioGroup(props: Props) {
                         </label>
                 </div>
             </div>
+
         </div>
+        </>
     )
 }
 

@@ -8,7 +8,7 @@ import { getJwt } from "@/services/AuthService";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import AdminNavbar from "@/components/Navbars/AdminNavbar";
 import FooterAdmin from "@/components/Footers/FooterAdmin";
-import Alert, { AlertProps } from "@/components/Alert";
+import AlertMessage, { AlertProps } from "@/components/AlertMessage";
 import { User } from "commons/models/user";
 
 export default function Settings() {
@@ -18,9 +18,9 @@ export default function Settings() {
     const [user, setUser] = useState<User>({} as User);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const [alert, setAlert] = useState<AlertProps>({show: false, type: "", message: ""});
+    const [alertMessage, setAlertMessage] = useState<AlertProps>({show: false, type: "", message: ""});
     const onCloseAlert = () => {
-        setAlert({show: false, type: "", message: ""});
+        setAlertMessage({show: false, type: "", message: ""});
     }
 
     useEffect(() => {
@@ -33,7 +33,7 @@ export default function Settings() {
         
         getUser(jwt.address)
             .then(user => setUser({...user, privateKey: ""}))
-            .catch(err => setAlert({
+            .catch(err => setAlertMessage({
                 show: true,
                 type: "error",
                 message: err.response ? err.response.data.message.toString() : err.message.toString()
@@ -59,7 +59,7 @@ export default function Settings() {
             .then(result => {
                 setUser({...user, privateKey: ""});
                 setIsLoading(false);
-                setAlert({
+                setAlertMessage({
                     show: true,
                     type: "info",
                     message: "Settings saved successfully!"
@@ -67,7 +67,7 @@ export default function Settings() {
             })
             .catch(err => {
                 console.log(err);
-                setAlert({
+                setAlertMessage({
                     show: true,
                     type: "error",
                     message: err.response ? err.response.data.message.toString() : err.message.toString()
@@ -105,7 +105,7 @@ export default function Settings() {
                         </div>
                         <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
 
-                        <Alert show={alert.show} type={alert.type} message={alert.message} onCloseAlert={onCloseAlert} />
+                        <AlertMessage show={alertMessage.show} type={alertMessage.type} message={alertMessage.message} onCloseAlert={onCloseAlert} />
 
                         <form>
                             <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">

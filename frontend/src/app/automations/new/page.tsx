@@ -6,12 +6,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import AdminNavbar from "@/components/Navbars/AdminNavbar";
 import FooterAdmin from "@/components/Footers/FooterAdmin";
-import Alert, { AlertProps } from "@/components/Alert";
+import AlertMessage, { AlertProps } from "@/components/AlertMessage";
 import Automation from "commons/models/automation";
 import { ChainId } from "commons/models/chainId";
 import { Exchange } from "commons/models/exchange";
+import RadioGroup from "@/components/RadioGroup";
 
-export default function Settings() {
+export default function NewAutomation() {
 
     const { push } = useRouter();
     const queryString = useSearchParams();
@@ -27,9 +28,9 @@ export default function Settings() {
     const [automation, setAutomation] = useState<Automation>(DEFAULT_AUTOMATION);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const [alert, setAlert] = useState<AlertProps>({show: false, type: "", message: ""});
+    const [alertMessage, setAlertMessage] = useState<AlertProps>({show: false, type: "", message: ""});
     const onCloseAlert = () => {
-        setAlert({show: false, type: "", message: ""});
+        setAlertMessage({show: false, type: "", message: ""});
     }
 
     useEffect(() => {
@@ -46,10 +47,13 @@ export default function Settings() {
 
     function btnSaveClick() {
 
-        if (!confirm("This action will consume some wei ('approve' function). Are you sure?")) return;
+        if (!confirm("This action will consume some wei ('approve' function).\nAre you sure?")) return;
         
         onCloseAlert();
         setIsLoading(true);
+
+        alert(JSON.stringify(automation));
+        setAlertMessage({show: true, type: "error", message: "Testando o componente de mensagem de alerta!"});
         
         //TODO: salvar a automação
     }
@@ -83,7 +87,7 @@ export default function Settings() {
                         </div>
                         <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
 
-                        <Alert show={alert.show} type={alert.type} message={alert.message} onCloseAlert={onCloseAlert} />
+                        <AlertMessage show={alertMessage.show} type={alertMessage.type} message={alertMessage.message} onCloseAlert={onCloseAlert} />
 
                         <form>
                             <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
@@ -94,26 +98,24 @@ export default function Settings() {
 
                                 <div className="w-full lg:w-6/12 px-4">
                                     <div className="relative w-full mb-3">
-                                    <label
-                                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                                        htmlFor="name"
-                                    >
-                                        Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="name"
-                                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                                        value={automation.name || ""}
-                                        onChange={onAutomationChange}
-                                    />
+                                        <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                                            htmlFor="name">Name</label>
+                                        <input
+                                            type="text"
+                                            id="name"
+                                            className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                                            value={automation.name || ""}
+                                            onChange={onAutomationChange}
+                                        />
                                     </div>
                                 </div>
                                 
                                 <div className="w-full lg:w-6/12 px-4">
-                                    <div className="relative w-full mb-3">
-                                    era email...
-                                    </div>
+
+                                    <RadioGroup id="isActive" title="Automation Status" textOn="Automation On" textOff="Automation Off" isOn={automation.isActive} onChange={onAutomationChange} />
+                                    <div className="mt-3"></div>
+                                    <RadioGroup id="isOpened" title="Position Status" textOn="Is Opened" textOff="Is Closed" isOn={automation.isOpened} onChange={onAutomationChange} />
+
                                 </div>
                             
                             </div>
