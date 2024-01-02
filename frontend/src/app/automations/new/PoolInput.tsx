@@ -4,6 +4,7 @@ import { getPool, getPoolSymbols } from '@/services/PoolService';
 import Pool from 'commons/models/pool';
 import React, { useState, useEffect } from 'react';
 import Select from "react-select";
+import FeeInput from './FeeInput';
 
 type Props = {
     poolId: string | null;
@@ -51,6 +52,10 @@ function PoolInput(props: Props) {
             props.onChange(null);
             return;
         }
+    }
+
+    function onPoolChange(pool: Pool | undefined) {
+        props.onChange(pool || null);
     }
 
     return (
@@ -107,15 +112,16 @@ function PoolInput(props: Props) {
                         options={symbols}
                         className="bg-gray-50 border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5"
                     />
-
-
                 </div>
             </div>
 
             <div className="w-full lg:w-3/12 pr-4">
                 <div className="relative w-full mb-3">
- 
-
+                    {
+                        symbol && symbol !== "ANY"
+                        ? <FeeInput poolId={props.poolId} symbol={symbol} onChange={onPoolChange} onError={props.onError} />
+                        : <></>
+                    }
                 </div>
             </div>
 
