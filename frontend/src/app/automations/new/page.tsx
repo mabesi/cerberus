@@ -7,12 +7,13 @@ import Sidebar from "@/components/Sidebar/Sidebar";
 import AdminNavbar from "@/components/Navbars/AdminNavbar";
 import FooterAdmin from "@/components/Footers/FooterAdmin";
 import AlertMessage, { AlertProps } from "@/components/AlertMessage";
-import Automation from "commons/models/automation";
+import Automation, { Condition } from "commons/models/automation";
 import { ChainId } from "commons/models/chainId";
 import { Exchange } from "commons/models/exchange";
 import RadioGroup from "@/components/RadioGroup";
 import PoolInput from "./PoolInput";
 import Pool from "commons/models/pool";
+import ConditionInput from "./ConditionInput";
 
 export default function NewAutomation() {
 
@@ -51,6 +52,14 @@ export default function NewAutomation() {
     function onPoolChange(pool: Pool | null) {
         setAutomation((prevState: any) => ({...prevState, poolId: pool ? pool.id : null}));
         setPool(pool || {} as Pool);
+    }
+
+    function onOpenConditionChange(condition: Condition) {
+        setAutomation((prevState: any) => ({...prevState, openCondition: condition}));
+    }
+
+    function onCloseConditionChange(condition: Condition) {
+        setAutomation((prevState: any) => ({...prevState, closeCondition: condition}));
     }
 
     function onError(error: string) {
@@ -156,6 +165,15 @@ export default function NewAutomation() {
                             <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
                             Strategy
                             </h6>
+
+                            <ConditionInput
+                                id="openCondition"
+                                title="Open Condition"
+                                symbol0={pool.symbol0}
+                                symbol1={pool.symbol1}
+                                condition={automation.openCondition}
+                                onChange={onOpenConditionChange}
+                                 />
 
                             <div className="flex flex-wrap">
 
