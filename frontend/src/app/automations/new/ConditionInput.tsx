@@ -73,6 +73,48 @@ function ConditionInput(props: Props) {
                 </div>
             </div>
 
+            <div className="w-full lg:w-3/12 pr-4 mt-6">
+                <div className="relative w-full mb-3">
+                    {
+                        condition.field
+                        ? (
+                            <select
+                                id={"selectOperator" + props.id}
+                                value={condition ? condition.operator : "=="}
+                                onChange={evt => onConditionChange("operator", evt.target.value)}
+                                className="bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                            >
+                                <option value="==">Equals</option>
+                                <option value="!=">Not Equals</option>
+                                <option value=">">Greater Than</option>
+                                <option value=">=">Greater or Equals</option>
+                                <option value="<">Less Than</option>
+                                <option value="<=">Less or Equals</option>
+                            </select>
+                        )
+                        : <></>
+                    }
+                </div>
+            </div>
+
+            <div className="w-full lg:w-3/12 pr-4 mt-6">
+                <div className="relative w-full mb-3">
+                    {
+                        condition.operator
+                        ? (
+                            <input
+                                type="text"
+                                id={"txtValue" + props.id}
+                                className="px-3 py-2 border border-gray-300 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                                value={condition ? condition.value : "0"}
+                                onChange={evt => onConditionChange("value", evt.target.value)}
+                            />
+                        )
+                        : <></>
+                    }
+                </div>
+            </div>
+
         </div>
 
         </>

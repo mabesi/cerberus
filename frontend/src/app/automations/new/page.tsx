@@ -194,17 +194,20 @@ export default function NewAutomation() {
                                     />
                                     </div>
                                 </div>
-                                
-                                <div className="w-full lg:w-6/12 px-4">
-                                    <div className="relative w-full mb-3">
-                                    era email...
-                                    </div>
-                                </div>
                             
                             </div>
 
+                            <ConditionInput
+                                id="closeCondition"
+                                title="Close Condition"
+                                symbol0={pool.symbol0}
+                                symbol1={pool.symbol1}
+                                condition={automation.closeCondition}
+                                onChange={onCloseConditionChange}
+                                 />
 
                         </form>
+
                         </div>
                     </div>
                     </div>
