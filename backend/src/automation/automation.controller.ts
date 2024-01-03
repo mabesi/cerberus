@@ -17,7 +17,7 @@ export class AutomationController {
     ) {}
 
     @UseGuards(AuthGuard)
-    @Patch(":id")
+    @Get(":id")
     async getAutomation(@Param("id") id: string, @Headers("Authorization") authorization) {
         const jwt = this.authService.decodeToken(authorization);
         return this.automationService.getAutomation(id, jwt.userId);

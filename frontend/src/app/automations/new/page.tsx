@@ -14,7 +14,7 @@ import RadioGroup from "@/components/RadioGroup";
 import PoolInput from "./PoolInput";
 import Pool from "commons/models/pool";
 import ConditionInput from "./ConditionInput";
-import { addAutomation, updateAutomation } from "@/services/AutomationService";
+import { addAutomation, updateAutomation, getAutomation } from "@/services/AutomationService";
 
 export default function NewAutomation() {
 
@@ -42,7 +42,9 @@ export default function NewAutomation() {
         
         if (!automationId) return;
 
-        //TODO: carregar a automação
+        getAutomation(automationId)
+            .then(automation => setAutomation(automation))
+            .catch(err => onError(err.response ? err.response.data.message.toString() : err.message.toString()))
 
     },[automationId]);
 
