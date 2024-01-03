@@ -16,6 +16,25 @@ export class AutomationService {
         })
     }
 
+    async getAutomations(userId: string, page: number = 1, pageSize: number = 20) : Promise<Automation[]> {
+        return db.automations.findMany({
+            where: {
+                userId
+            },
+            skip: (page - 1) * pageSize,
+            take: pageSize
+        })
+    }
+
+    async getActiveAutomations(userId: string) : Promise<Automation[]> {
+        return db.automations.findMany({
+            where: {
+                userId,
+                isActive: true
+            }
+        })
+    }
+
     async addAutomation(userId: string, automation: AutomationDTO) : Promise<Automation> {
         return db.automations.create({
             data: {
@@ -49,6 +68,39 @@ export class AutomationService {
                 name: automation.name,
                 nextAmount: automation.nextAmount,
                 poolId: automation.poolId,
+            }
+        })
+    }
+
+    async startAutomation(id: string, userId: string) : Promise<Automation> {
+        return db.automations.update({
+            where: {
+                id,
+                userId
+            },
+            data: {
+                isActive: true
+            }
+        })
+    }
+
+    async stopAutomation(id: string, userId: string) : Promise<Automation> {
+        return db.automations.update({
+            where: {
+                id,
+                userId
+            },
+            data: {
+                isActive: false
+            }
+        })
+    }
+
+    async deleteAutomation(id: string, userId: string) : Promise<Automation> {
+        return db.automations.delete({
+            where: {
+                id,
+                userId
             }
         })
     }
