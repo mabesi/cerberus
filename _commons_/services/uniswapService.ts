@@ -4,7 +4,7 @@ import { PoolData, TokenData } from "./uniswapTypes";
 import { User } from "../models/user";
 import { TransactionResponse, ethers } from "ethers";
 
-const ABI_ERC20 = require("./ERC20.json");
+import * as ABI_ERC20 from "./ERC20.json";
 
 export async function getTokens(skip: number) : Promise<TokenData[]> {
 
@@ -65,6 +65,7 @@ export async function preApprove(user: User, tokenToApprove: string, amountInEth
     const tx: TransactionResponse = await tokenContract.approve(Config.UNISWAP_ROUTER, ethers.parseEther(amountInEth));
 
     console.log(`Approve Tx: ` + tx.hash);
+    console.log(`Approved amount: ` + amountInEth + ` (In wei: ${ethers.parseEther(amountInEth)})`);
 
     await tx.wait()
 }
@@ -74,6 +75,7 @@ export async function approve(tokenContract: ethers.Contract, amountInWei: strin
     const tx: TransactionResponse = await tokenContract.approve(Config.UNISWAP_ROUTER, amountInWei);
 
     console.log(`Approve Tx: ` + tx.hash);
+    console.log(`Approved amount (wei): ` + amountInWei);
 
     await tx.wait()
 }

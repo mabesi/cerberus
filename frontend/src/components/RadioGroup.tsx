@@ -20,6 +20,10 @@ function RadioGroup(props: Props) {
         props.onChange({target: {id: props.id, value: evt.target.id === RADIO_ON}});
     }
 
+    function bgColor(statusOn: boolean) : string {
+        return statusOn ? "bg-emerald-200" : "bg-red-200";
+    }
+
     return (
         <>
         {
@@ -32,7 +36,7 @@ function RadioGroup(props: Props) {
             :<></>
         }
 
-        <div className="flex flex-wrap mx-4 bg-white w-full border-2 border-gray-50 rounded-lg text-gray-900">
+        <div className={`flex flex-wrap mx-4 ${bgColor(props.isOn)} w-full border-2 border-gray-50 rounded-lg text-gray-900`}>
             <div className="w-full lg:w-6/12">
                 <div className="flex items-center pl-3">
                     <input id={RADIO_ON} type="radio" checked={props.isOn} onChange={onChange} name={props.id} 
