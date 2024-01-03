@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+import { Optional } from "@nestjs/common";
 import { Type } from "class-transformer";
 import { IsBoolean, IsInt, IsOptional, IsString, ValidateNested } from "class-validator";
 import { ChainId } from "commons/models/chainId";
@@ -29,9 +31,10 @@ export class AutomationDTO {
     @Type(() => ConditionDTO)
     openCondition: ConditionDTO;
 
+    @Optional()
     @ValidateNested()
     @Type(() => ConditionDTO)
-    closeCondition: ConditionDTO;
+    closeCondition?: ConditionDTO;
 
     @IsBoolean()
     @IsOptional()

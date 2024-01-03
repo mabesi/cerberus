@@ -79,7 +79,7 @@ model automations {
   poolId          String?
   pool            pools?    @relation(fields: [poolId], references: [id])
   openCondition   Condition
-  closeCondition  Condition
+  closeCondition  Condition?
   isOpened        Boolean   @default(false)
   isActive        Boolean   @default(false)
   nextAmount      String

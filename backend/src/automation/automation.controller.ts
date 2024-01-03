@@ -22,7 +22,7 @@ export class AutomationController {
         
         const jwt = this.authService.decodeToken(authorization);
         const user = await this.userService.getUser(jwt.userId);
-        if (!user.privateKey) throw new Error("You must have a private key in settings before start an automation");
+        if (!user.privateKey) throw new Error("You must have a private key in settings before add an automation.");
 
         const automationResult = await this.automationService.addAutomation(jwt.userId, automation);
 
@@ -45,7 +45,7 @@ export class AutomationController {
         
         const jwt = this.authService.decodeToken(authorization);
         const user = await this.userService.getUser(jwt.userId);
-        if (!user.privateKey) throw new Error("You must have a private key in settings before update an automation");
+        if (!user.privateKey) throw new Error("You must have a private key in settings before update an automation.");
 
         const automationResult = await this.automationService.updateAutomation(id, jwt.userId, automation);
         if (!automationResult.poolId || !automationResult.isActive) return automationResult;
@@ -68,7 +68,7 @@ export class AutomationController {
         
         const jwt = this.authService.decodeToken(authorization);
         const user = await this.userService.getUser(jwt.userId);
-        if (!user.privateKey) throw new Error("You must have a private key in settings before update an automation");
+        if (!user.privateKey) throw new Error("You must have a private key in settings before start an automation.");
 
         const automation = await this.automationService.startAutomation(id, jwt.userId);
         if (!automation.poolId) return automation;

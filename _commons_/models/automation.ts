@@ -16,7 +16,7 @@ export default class Automation {
     network: ChainId;
     poolId: string | null;
     openCondition: Condition;
-    closeCondition: Condition;
+    closeCondition: Condition | null;
     isOpened: boolean;
     isActive: boolean;
     nextAmount: string;
