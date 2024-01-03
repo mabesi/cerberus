@@ -4,7 +4,9 @@ import { authServiceMock } from "../auth/auth.service.mock";
 import { AutomationController } from "../../src/automation/automation.controller";
 import { poolServiceMock } from "../pool/pool.service.mock";
 import { activeUserMock, userServiceMock } from "../user/user.service.mock";
-import { AutomationDTO } from "src/automation/automation.dto";
+import { AutomationDTO } from "../../src/automation/automation.dto";
+
+jest.mock("commons/services/uniswapService");
 
 describe("AutomationController Tests", () => {
 
