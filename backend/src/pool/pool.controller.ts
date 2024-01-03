@@ -6,12 +6,6 @@ import { AuthGuard } from "../auth/auth.guard";
 export class PoolController {
 
     constructor(private readonly poolService: PoolService) {}
-
-    @UseGuards(AuthGuard)
-    @Get()
-    async getPools(@Query("page", ParseIntPipe) page: number, @Query("pageSize", ParseIntPipe) pageSize: number) {
-        return this.poolService.getPools(page, pageSize);
-    }
     
     @UseGuards(AuthGuard)
     @Get("symbols")
@@ -26,19 +20,25 @@ export class PoolController {
     } 
     
     @UseGuards(AuthGuard)
+    @Get("search/:symbol")
+    async searchPool(@Param("symbol") symbol: string) {
+        const pools = await this.poolService.searchPool(symbol);
+        if (!pools || !pools.length) throw new NotFoundException();
+        return pools;
+    }
+
+    @UseGuards(AuthGuard)
+    @Get()
+    async getPools(@Query("page", ParseIntPipe) page: number, @Query("pageSize", ParseIntPipe) pageSize: number) {
+        return this.poolService.getPools(page, pageSize);
+    }    
+
+    @UseGuards(AuthGuard)
     @Get(":id")
     async getPool(@Param("id") id: string) {
         const pool = await this.poolService.getPool(id);
         if (!pool) throw new NotFoundException();
         return pool;
-    }
-
-    @UseGuards(AuthGuard)
-    @Get("search/:symbol")
-    async searchPool(@Param("symbol") symbol: string) {
-        const pools = await this.poolService.searchPool(symbol);
-        if (!pools) throw new NotFoundException();
-        return pools;
     }
 
 }
