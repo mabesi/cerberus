@@ -3,6 +3,7 @@ import { getCustomerNextPayment, getCustomers, pay } from "commons/services/cerb
 import usersRepository from "./repositories/usersRepository";
 import { Status } from "commons/models/status";
 import sendMail from "./services/mailService";
+import automationsRepository from "./repositories/automationsRepository";
 
 async function executionCycle() {
     
@@ -14,19 +15,27 @@ async function executionCycle() {
     for (let i=0; i < customers.length; i++) {
 
         const customerAddress = customers[i].toLowerCase();
-        if (/0x0+/.test(customerAddress)) continue;
+        if (/^(0x0+)$/.test(customerAddress)) continue;
 
         const nextPayment = await getCustomerNextPayment(customerAddress);
         if (nextPayment > (Date.now() / 1000)) continue;
 
+        let user;
+
         try {
+            
             console.log(`Charging customer ` + customerAddress);
             await pay(customerAddress);
+            user = await usersRepository.updateUserStatus(customerAddress, Status.ACTIVE);
+            if (!user) continue;
+            await automationsRepository.startAutomations(user.id!);
+
         } catch (err) {
             
             console.log(`Blocking customer ` + customerAddress);
             const user = await usersRepository.updateUserStatus(customerAddress, Status.BLOCKED);
             if (!user) continue;
+            await automationsRepository.stopAutomations(user.id!);
 
             await sendMail(
                 user.email,
@@ -43,10 +52,10 @@ async function executionCycle() {
                 Cerberus Admin
                 `
             );
-
-            //TODO: bloquear as automações do usuário bloqueado
         }
     }
+
+    console.log(`Finished the payment cycle.`);
 }
 
 export default () => {
