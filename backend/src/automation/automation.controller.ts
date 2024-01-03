@@ -5,6 +5,8 @@ import { PoolService } from "../pool/pool.service";
 import { UserService } from "../user/user.service";
 import { AuthService } from "../auth/auth.service";
 import { AutomationDTO } from "./automation.dto";
+import { getAllowance, preApprove } from "commons/services/uniswapService";
+import { ethers } from "ethers";
 
 @Controller("automations")
 export class AutomationController {
@@ -27,13 +29,15 @@ export class AutomationController {
         const automationResult = await this.automationService.addAutomation(jwt.userId, automation);
 
         if (automation.isActive && automation.poolId) {
+
             const pool = await this.poolService.getPool(automation.poolId);
             const condition = automation.isOpened ? automation.closeCondition : automation.openCondition;
+            
             if (!condition) return automationResult;
 
             const tokenAddress = condition.field.indexOf("price0") !== -1 ? pool.token1 : pool.token0;
 
-            //TODO: pré-aprovação do swap
+            await preApprove(user, tokenAddress, automation.nextAmount);
         }
 
         return automationResult;
@@ -56,8 +60,11 @@ export class AutomationController {
         const pool = await this.poolService.getPool(automation.poolId);
         const tokenAddress = condition.field.indexOf("price0") !== -1 ? pool.token1 : pool.token0;
 
-        //TODO: pegar allowance
-        //TODO: pré-aprovação do swap
+        const allowance = await getAllowance(tokenAddress, user.address);
+
+        if (allowance < ethers.parseEther(automation.nextAmount)) {
+            await preApprove(user, tokenAddress, automation.nextAmount);
+        }
 
         return automationResult;
     }
@@ -79,8 +86,11 @@ export class AutomationController {
         const pool = await this.poolService.getPool(automation.poolId);
         const tokenAddress = condition.field.indexOf("price0") !== -1 ? pool.token1 : pool.token0;
 
-        //TODO: pegar allowance
-        //TODO: pré-aprovação do swap
+        const allowance = await getAllowance(tokenAddress, user.address);
+
+        if (allowance < ethers.parseEther(automation.nextAmount)) {
+            await preApprove(user, tokenAddress, automation.nextAmount);
+        }
 
         return automation;
     }
