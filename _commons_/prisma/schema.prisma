@@ -22,6 +22,9 @@ model users {
   privateKey     String
   activationCode String
   activationDate DateTime
+  automations automations[]
+
+  @@index([email])
 }
 
 model tokens {
@@ -57,4 +60,27 @@ model pools {
   lastUpdate      DateTime
   lastUpdate_15   DateTime?
   lastUpdate_60   DateTime?
+  automations automations[] @ignore
+}
+
+type Condition {
+  field String
+  operator String
+  value String
+}
+
+model automations {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String    @db.ObjectId
+  user            users     @relation(fields: [userId], references: [id])
+  exchange        Int       @default(1)
+  network         Int       @default(1)
+  name            String
+  poolId          String?
+  pool            pools?    @relation(fields: [poolId], references: [id])
+  openCondition   Condition
+  closeCondition  Condition
+  isOpened        Boolean   @default(false)
+  isActive        Boolean   @default(false)
+  nextAmount      String
 }
