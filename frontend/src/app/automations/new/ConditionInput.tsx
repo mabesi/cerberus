@@ -47,7 +47,7 @@ function ConditionInput(props: Props) {
         <div className="flex flex-wrap">
 
             <div className="w-full lg:w-3/12 px-4">
-                <div className="relative w-full mb-3">
+                <div className="relative w-full mb-3 ">
                     <label htmlFor={"selectField" + props.id} className="block uppercase text-blueGray-600 text-sm font-bold mb-2">
                         {props.title}
                     </label>

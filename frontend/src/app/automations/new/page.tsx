@@ -177,13 +177,13 @@ export default function NewAutomation() {
 
                             <div className="flex flex-wrap">
 
-                                <div className="w-full lg:w-6/12 px-4">
+                                <div className="w-full lg:w-3/12 px-4">
                                     <div className="relative w-full mb-3">
                                     <label
                                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                                         htmlFor="nextAmount"
                                     >
-                                        Trade Amount
+                                        Trade Amount ({automation.isOpened ? `${pool.symbol0 || "Symbol0"} to sell` : `${pool.symbol1 || "Symbol1"} to buy ${pool.symbol0 || "Symbol0"}`})
                                     </label>
                                     <input
                                         type="text"
