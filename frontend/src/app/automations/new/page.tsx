@@ -14,6 +14,7 @@ import RadioGroup from "@/components/RadioGroup";
 import PoolInput from "./PoolInput";
 import Pool from "commons/models/pool";
 import ConditionInput from "./ConditionInput";
+import { addAutomation, updateAutomation } from "@/services/AutomationService";
 
 export default function NewAutomation() {
 
@@ -69,6 +70,9 @@ export default function NewAutomation() {
 
     function btnSaveClick() {
 
+        onCloseAlert();
+        setIsLoading(true);
+        
         if (!automation.name) {
             onError("The automation name is required.");
             return;
@@ -77,17 +81,25 @@ export default function NewAutomation() {
             onError("The automation pool is required.");
             return;
         }
+        
+        if (!confirm("This action will consume some wei ('approve' function).\nAre you sure?")) {
+            setIsLoading(false);
+            return;
+        }
+        
+        let promise : Promise<Automation>;
 
-        if (!confirm("This action will consume some wei ('approve' function).\nAre you sure?")) return;
-        
-        onCloseAlert();
-        setIsLoading(true);
-        
-        alert(JSON.stringify(automation));
-        setAlertMessage({show: true, type: "error", message: "Testando o componente de mensagem de alerta!"});
-        
-        //TODO: salvar a automação
-        setIsLoading(false);
+        if (automationId)
+            promise = updateAutomation(automationId, automation);
+        else
+            promise = addAutomation(automation);
+
+        promise
+            .then(automation => push("/automations"))
+            .catch(err => {
+                setIsLoading(false);
+                onError(err.response ? err.response.data.message.toString() : err.message.toString());
+            })
     }
 
   return (
