@@ -5,6 +5,8 @@ import { User } from "../models/user";
 import { TransactionResponse, ethers } from "ethers";
 
 import * as ABI_ERC20 from "./ERC20.json";
+import Automation from "../models/automation";
+import Pool from "../models/pool";
 
 export async function getTokens(skip: number) : Promise<TokenData[]> {
 
@@ -86,4 +88,12 @@ export async function getAllowance(tokenAddress: string, wallet: string) : Promi
     const tokenContract = new ethers.Contract(tokenAddress, ABI_ERC20, provider);
 
     return tokenContract.allowance(wallet, Config.UNISWAP_ROUTER);
+}
+
+export async function swap(user: User, automation: Automation, pool: Pool) : Promise<string> {
+    
+    //TODO: implementar o swap
+    
+    // return amountOut (in wei)
+    return Promise.resolve("0");
 }
