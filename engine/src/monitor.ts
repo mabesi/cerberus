@@ -29,7 +29,7 @@ async function executionCycle() {
 
             cerberusExecution(poolResult);
             
-            console.log(`Price for ${poolResult.symbol} (${poolResult.fee / 10000}%) is ${Number(poolResult.price0).toFixed(6)}`);
+            // console.log(`Price for ${poolResult.symbol} (${poolResult.fee / 10000}%) is ${Number(poolResult.price0).toFixed(6)}`);
         }
 
         WSS.broadcast({event: "priceUpdate", data: bulkResult});

@@ -7,9 +7,14 @@ import { swap } from "commons/services/uniswapService";
 import sendMail from "./services/mailService";
 
 function evalCondition(automation: Automation, pool: Pool) {
-    //TODO: implementar avaliação da automação para o pool
     
-    return false;
+    const condition = automation.isOpened ? automation.closeCondition : automation.openCondition;
+    if (!condition) return false;
+
+    const ifCondition = `pool.${condition.field}${condition.operator}${condition.value}`;
+    console.log(`Condition: ` + ifCondition);
+
+    return Function("pool", "return " + ifCondition)(pool);
 }
 
 export default async (pool: Pool) : Promise<void> => {
