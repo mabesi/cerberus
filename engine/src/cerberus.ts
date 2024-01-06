@@ -44,7 +44,9 @@ export default async (pool: Pool) : Promise<void> => {
             const amountOut = await swap(user, automation, pool);
             
             // atualizar a automação
-            automation.nextAmount = amountOut;
+            if(amountOut !== "0")
+                automation.nextAmount = amountOut;
+
             automation.isOpened = !automation.isOpened;
 
             // registrar trade
@@ -52,24 +54,26 @@ export default async (pool: Pool) : Promise<void> => {
         } catch (err: any) {
                     
             console.error(`Cannot swap. AutomationId: ${automation.id}`);
+            console.error(err);
+
             automation.isActive = false;
             
-            await sendMail(
-                user.email,
-                "Cerberus - Automation Error",
-                `
-                Hi, ${user.name}!
+            // await sendMail(
+            //     user.email,
+            //     "Cerberus - Automation Error",
+            //     `
+            //     Hi, ${user.name}!
 
-                Your automation was stopped due to a swap error.
+            //     Your automation was stopped due to a swap error.
 
-                Automation name: ${automation.name}
+            //     Automation name: ${automation.name}
 
-                Error: ${err.message}
+            //     Error: ${err.message}
 
-                See ya!
-                Cerberus Admin
-                `
-            );
+            //     See ya!
+            //     Cerberus Admin
+            //     `
+            // );
 
         }
 

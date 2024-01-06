@@ -16,6 +16,8 @@ import Pool from "commons/models/pool";
 import ConditionInput from "./ConditionInput";
 import { addAutomation, updateAutomation, getAutomation } from "@/services/AutomationService";
 
+import { ethers } from "ethers";
+
 export default function NewAutomation() {
 
     const { push } = useRouter();
@@ -50,6 +52,12 @@ export default function NewAutomation() {
 
     function onAutomationChange(evt: React.ChangeEvent<HTMLInputElement>) {
         setAutomation((prevState: any) => ({...prevState, [evt.target.id]: evt.target.value}));
+    }
+
+    function onAmountChange(evt: React.ChangeEvent<HTMLInputElement>) {
+        const decimals = getDecimals();
+        const amountInWei = ethers.parseUnits(evt.target.value, decimals)
+        setAutomation((prevState: any) => ({...prevState, nextAmount: amountInWei.toString()}));
     }
 
     function onPoolChange(pool: Pool | null) {
@@ -102,6 +110,34 @@ export default function NewAutomation() {
                 setIsLoading(false);
                 onError(err.response ? err.response.data.message.toString() : err.message.toString());
             })
+    }
+
+    function getDecimals() {
+
+        let decimals: number = 18;
+
+        if (pool && pool.decimals0 && pool.decimals1)
+            decimals = automation.isOpened ? pool.decimals0 : pool.decimals1;
+
+        console.log(pool);
+
+        return decimals;
+    }
+
+    function formatAmount() {
+        
+        if (!automation || !automation.nextAmount) return "0";
+        const decimals = getDecimals();
+        return ethers.formatUnits(automation.nextAmount, decimals) || "0";
+    }
+
+    function getAmountTooltip() {
+        
+        if (!pool || !automation) return "";
+
+        return automation.isOpened
+            ? `(${pool.symbol0 || "Symbol0"} to sell)`
+            : `(${pool.symbol1 || "Symbol1"} to buy ${pool.symbol0 || "Symbol0"})`
     }
 
   return (
@@ -210,14 +246,14 @@ export default function NewAutomation() {
                                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                                         htmlFor="nextAmount"
                                     >
-                                        Trade Amount ({automation.isOpened ? `${pool.symbol0 || "Symbol0"} to sell` : `${pool.symbol1 || "Symbol1"} to buy ${pool.symbol0 || "Symbol0"}`})
+                                        Trade Amount {getAmountTooltip()}
                                     </label>
                                     <input
                                         type="text"
                                         id="nextAmount"
                                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                                        value={automation.nextAmount || "0"}
-                                        onChange={onAutomationChange}
+                                        value={formatAmount()}
+                                        onChange={onAmountChange}
                                     />
                                     </div>
                                 </div>

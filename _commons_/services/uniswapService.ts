@@ -2,9 +2,13 @@ import axios from "axios";
 import Config from "../configBase";
 import { PoolData, TokenData } from "./uniswapTypes";
 import { User } from "../models/user";
-import { TransactionResponse, ethers } from "ethers";
+import { TransactionReceipt, TransactionResponse, ethers } from "ethers";
 
-import * as ABI_ERC20 from "./ERC20.json";
+// import * as ABI_UNISWAP_ROUTER from "./Uniswap.json";
+// import * as ABI_ERC20 from "./ERC20.json";
+const ABI_UNISWAP_ROUTER = require("./Uniswap.json");
+const ABI_ERC20 = require("./ERC20.json");
+
 import Automation from "../models/automation";
 import Pool from "../models/pool";
 
@@ -57,17 +61,17 @@ export async function getTopPools(count: number = 100, skip: number = 0) : Promi
     return data.data ? data.data.pools as PoolData[] :  [];
 }
 
-export async function preApprove(user: User, tokenToApprove: string, amountInEth: string) {
+export async function preApprove(user: User, tokenToApprove: string, amountInWei: string) {
 
     if (!user.privateKey) throw new Error(`User doesn't has private key.`);
 
     const provider = new ethers.JsonRpcProvider(Config.RPC_NODE);
     const signer = new ethers.Wallet(user.privateKey, provider);
     const tokenContract = new ethers.Contract(tokenToApprove, ABI_ERC20, signer);
-    const tx: TransactionResponse = await tokenContract.approve(Config.UNISWAP_ROUTER, ethers.parseEther(amountInEth));
+    const tx: TransactionResponse = await tokenContract.approve(Config.UNISWAP_ROUTER, amountInWei);
 
     console.log(`Approve Tx: ` + tx.hash);
-    console.log(`Approved amount: ` + amountInEth + ` (In wei: ${ethers.parseEther(amountInEth)})`);
+    console.log(`Approved amount in wei: ${amountInWei})`);
 
     await tx.wait()
 }
@@ -86,14 +90,74 @@ export async function getAllowance(tokenAddress: string, wallet: string) : Promi
     
     const provider = new ethers.JsonRpcProvider(Config.RPC_NODE);
     const tokenContract = new ethers.Contract(tokenAddress, ABI_ERC20, provider);
-
     return tokenContract.allowance(wallet, Config.UNISWAP_ROUTER);
 }
 
 export async function swap(user: User, automation: Automation, pool: Pool) : Promise<string> {
     
-    //TODO: implementar o swap
+    if (!user.privateKey) return Promise.resolve("0");
     
-    // return amountOut (in wei)
-    return Promise.resolve("0");
+    const provider = new ethers.JsonRpcProvider(Config.RPC_NODE);
+    const signer = new ethers.Wallet(user.privateKey, provider);
+    
+    const routerContract = new ethers.Contract(Config.UNISWAP_ROUTER, ABI_UNISWAP_ROUTER, signer);
+    const token0Contract = new ethers.Contract(pool.token0, ABI_ERC20, signer);
+    const token1Contract = new ethers.Contract(pool.token1, ABI_ERC20, signer);
+    
+    const condition = automation.isOpened ? automation.closeCondition : automation.openCondition;
+    if (!condition) return Promise.resolve("0");
+    
+    const [tokenIn, tokenOut] = condition.field.indexOf("price0") !== -1
+        ? [token1Contract, token0Contract]
+        : [token0Contract, token1Contract];
+        
+    const amountIn = BigInt(automation.nextAmount);
+
+    const allowance = await getAllowance(tokenIn.target.toString(), user.address);
+    if (allowance < amountIn)
+        await approve(tokenIn, amountIn);
+    
+    const swapParams = {
+        tokenIn,
+        tokenOut,
+        fee: pool.fee,
+        recipient: user.address,
+        deadline: (Date.now() / 1000) + 10,
+        amountIn,
+        amountOutMinimum: 0,
+        sqrtPriceLimitX96: 0
+    }
+
+    console.log(swapParams);
+
+    const tx: TransactionResponse = await routerContract.exactInputSingle(
+        swapParams,
+        {
+            from: user.address,
+            gasPrice: ethers.parseUnits("25", "gwei"),
+            gasLimit: 250000
+        }
+    );
+
+    console.log(`Swap Tx Id: ` + tx.hash);
+
+    let amountOutWei: bigint = 0n;
+
+    try {
+
+        const receipt: TransactionReceipt | null = await tx.wait();
+        if (!receipt) throw new Error(`Swap Error. Tx Id: ${tx.hash}`);
+
+        amountOutWei = ethers.toBigInt(receipt.logs[0].data);
+        if (!amountOutWei) throw new Error(`Swap Error. Tx Id: ${tx.hash}`);
+    
+    } catch (err: any) {
+    
+        console.log(err);
+        throw new Error(`Swap Error. Tx Id: ${tx.hash}`);
+    }
+
+    console.log(`Swap Success. Tx Id: ${tx.hash}. Amount Out: ${amountOutWei}`);
+
+    return amountOutWei.toString();
 }
