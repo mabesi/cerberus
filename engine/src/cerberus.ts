@@ -58,6 +58,9 @@ export default async (pool: Pool) : Promise<void> => {
 
             automation.isActive = false;
             
+
+            //TODO: reativar envio de email de erro de swap
+            
             // await sendMail(
             //     user.email,
             //     "Cerberus - Automation Error",
