@@ -13,6 +13,8 @@ import { PoolController } from './pool/pool.controller';
 import { PoolService } from './pool/pool.service';
 import { AutomationController } from './automation/automation.controller';
 import { AutomationService } from './automation/automation.service';
+import { TradeController } from './trade/trade.controller';
+import { TradeService } from './trade/trade.service';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { AutomationService } from './automation/automation.service';
     }),
     AuthModule
   ],
-  controllers: [AppController, UserController, PoolController, AutomationController],
-  providers: [AppService, UserService, AuthService, JwtService, PoolService, AutomationService],
+  controllers: [AppController, UserController, PoolController, AutomationController, TradeController],
+  providers: [AppService, UserService, AuthService, JwtService, PoolService, AutomationService, TradeService],
 })
 export class AppModule {}
