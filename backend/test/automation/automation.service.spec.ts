@@ -47,6 +47,14 @@ describe("AutomationService Tests", () => {
         expect(automations.length).toEqual(1);
     });
 
+    it('Should get top automations', async () => {
+        prismaMock.automations.findMany.mockResolvedValue([{ ...activeAutomationMock } as automations]);
+
+        const automations = await automationService.getTopAutomations(userId);
+
+        expect(automations.length).toEqual(1);
+    });
+
     it('Should add an automation', async () => {
         prismaMock.automations.create.mockResolvedValue(newAutomationMock as automations);
 
