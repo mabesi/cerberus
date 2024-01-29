@@ -1,6 +1,6 @@
 import axios from "axios";
 import Config from "../configBase";
-import { PoolData, TokenData } from "./uniswapTypes";
+import { PoolData, SwapData, TokenData } from "./uniswapTypes";
 import { User } from "../models/user";
 import { TransactionReceipt, TransactionResponse, ethers } from "ethers";
 
@@ -93,9 +93,9 @@ export async function getAllowance(tokenAddress: string, wallet: string) : Promi
     return tokenContract.allowance(wallet, Config.UNISWAP_ROUTER);
 }
 
-export async function swap(user: User, automation: Automation, pool: Pool) : Promise<string> {
+export async function swap(user: User, automation: Automation, pool: Pool) : Promise<SwapData | null> {
     
-    if (!user.privateKey) return Promise.resolve("0");
+    if (!user.privateKey) return null;
     
     const provider = new ethers.JsonRpcProvider(Config.RPC_NODE);
     const signer = new ethers.Wallet(user.privateKey, provider);
@@ -105,9 +105,11 @@ export async function swap(user: User, automation: Automation, pool: Pool) : Pro
     const token1Contract = new ethers.Contract(pool.token1, ABI_ERC20, signer);
     
     const condition = automation.isOpened ? automation.closeCondition : automation.openCondition;
-    if (!condition) return Promise.resolve("0");
+    if (!condition) return null;
     
-    const [tokenIn, tokenOut] = condition.field.indexOf("price0") !== -1
+    const isPrice0Condition = condition.field.indexOf("price0") !== -1;
+    
+    const [tokenIn, tokenOut] = isPrice0Condition
         ? [token1Contract, token0Contract]
         : [token0Contract, token1Contract];
         
@@ -159,5 +161,11 @@ export async function swap(user: User, automation: Automation, pool: Pool) : Pro
 
     console.log(`Swap Success. Tx Id: ${tx.hash}. Amount Out: ${amountOutWei}`);
 
-    return amountOutWei.toString();
+    return {
+        tokenIn: tokenIn.target.toString(),
+        tokenOut: tokenOut.target.toString(),
+        amountIn: amountIn.toString(),
+        amountOut: amountOutWei.toString(),
+        price: isPrice0Condition ? pool.price0 : pool.price1
+    } as SwapData;
 }

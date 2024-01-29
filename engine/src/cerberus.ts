@@ -5,6 +5,7 @@ import automationsRepository from "./repositories/automationsRepository";
 import usersRepository from "./repositories/usersRepository";
 import { swap } from "commons/services/uniswapService";
 import sendMail from "./services/mailService";
+import tradesRepository from "./repositories/tradesRepository";
 
 function evalCondition(automation: Automation, pool: Pool) {
     
@@ -40,16 +41,29 @@ export default async (pool: Pool) : Promise<void> => {
 
         try {
             
-            // realizar swap (receive amountOut in wei)
-            const amountOut = await swap(user, automation, pool);
+            const swapResult = await swap(user, automation, pool);
+
+            if (!swapResult) return;
             
-            // atualizar a automação
-            if(amountOut !== "0")
-                automation.nextAmount = amountOut;
+            if(swapResult.amountOut)
+                automation.nextAmount = swapResult.amountOut;
+
+            let trade;
+
+            if (automation.isOpened) {
+                trade = await tradesRepository.closeTrade(automation.userId, automation.id!, swapResult)
+                automation.tradeCount = automation.tradeCount ? automation.tradeCount + 1 : 1;
+                automation.pnl = automation.pnl ? automation.pnl + trade?.pnl! : trade?.pnl;
+            } else
+                trade = await tradesRepository.addTrade({
+                    automationId: automation.id!,
+                    userId: automation.userId,
+                    openAmountIn: swapResult.amountIn,
+                    openAmountOut: swapResult.amountOut,
+                    openPrice: swapResult.price
+                })
 
             automation.isOpened = !automation.isOpened;
-
-            // registrar trade
 
         } catch (err: any) {
                     
