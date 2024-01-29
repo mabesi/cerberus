@@ -118,6 +118,14 @@ export class AutomationController {
         const jwt = this.authService.decodeToken(authorization);
         return this.automationService.getActiveAutomations(jwt.userId);
     }
+
+    @UseGuards(AuthGuard)
+    @Get("top")
+    async getTopAutomations(@Headers("Authorization") authorization) {
+
+        const jwt = this.authService.decodeToken(authorization);
+        return this.automationService.getTopAutomations(jwt.userId);
+    }
     
     @UseGuards(AuthGuard)
     @Get(":id")
