@@ -26,6 +26,16 @@ export class AutomationService {
         })
     }
 
+    async getTopAutomations(userId: string) : Promise<Automation[]> {
+        return db.automations.findMany({
+            where: {
+                userId
+            },
+            take: 5,
+            orderBy: { pnl: "desc" }
+        })
+    }
+
     async getActiveAutomations(userId: string) : Promise<Automation[]> {
         return db.automations.findMany({
             where: {
