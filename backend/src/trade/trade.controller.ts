@@ -19,7 +19,7 @@ export class TradeController {
         @Query("dateTo", ParseIntPipe) dateTo: number
         ) {
         
-        if (!dateFrom) dateFrom = Date.now() - (30 * 24 * 60 * 1000);
+        if (!dateFrom) dateFrom = Date.now() - (30 * 24 * 60 * 60 * 1000);
         if (!dateTo) dateTo = Date.now();
 
         const jwt = this.authService.decodeToken(authorization);

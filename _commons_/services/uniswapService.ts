@@ -136,8 +136,8 @@ export async function swap(user: User, automation: Automation, pool: Pool) : Pro
         swapParams,
         {
             from: user.address,
-            gasPrice: ethers.parseUnits("25", "gwei"),
-            gasLimit: 250000
+            gasPrice: ethers.parseUnits("35", "gwei"),
+            gasLimit: 350000
         }
     );
 
