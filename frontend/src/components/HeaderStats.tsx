@@ -87,9 +87,9 @@ export default function HeaderStats() {
                 <CardStats
                   statSubtitle="Trading Day"
                   statTitle={`${swapsToday}`}
-                  statArrow={dailyPerformance >= 0 ? "up" : "down"}
+                  statArrow={dailyPerformance > 0 ? "up" : "down"}
                   statPercent={`${dailyPerformance.toFixed(2)}`}
-                  statPercentColor={dailyPerformance >= 0 ? "text-emerald-500" : "text-red-500"}
+                  statPercentColor={dailyPerformance > 0 ? "text-emerald-500" : "text-red-500"}
                   statDescripiron="Performance Today"
                   statIconName="fas fa-clock"
                   statIconColor="bg-orange-500"
@@ -99,9 +99,9 @@ export default function HeaderStats() {
                 <CardStats
                   statSubtitle="Trading Week"
                   statTitle={`${swapsWeek}`}
-                  statArrow={weeklyPerformance >= 0 ? "up" : "down"}
+                  statArrow={weeklyPerformance > 0 ? "up" : "down"}
                   statPercent={`${weeklyPerformance.toFixed(2)}`}
-                  statPercentColor={weeklyPerformance >= 0 ? "text-emerald-500" : "text-red-500"}
+                  statPercentColor={weeklyPerformance > 0 ? "text-emerald-500" : "text-red-500"}
                   statDescripiron="Performance This Week"
                   statIconName="fas fa-calendar"
                   statIconColor="bg-pink-500"
@@ -111,9 +111,9 @@ export default function HeaderStats() {
                 <CardStats
                   statSubtitle="Trading Month"
                   statTitle={`${monthlyPerformance.toFixed(2)}%`}
-                  statArrow={monthlyPerformance >= lastPerformance ? "up" : "down"}
+                  statArrow={monthlyPerformance > lastPerformance ? "up" : "down"}
                   statPercent={`${lastPerformance.toFixed(2)}`}
-                  statPercentColor={lastPerformance >= 0 ? "text-emerald-500" : "text-red-500"}
+                  statPercentColor={lastPerformance > 0 ? "text-emerald-500" : "text-red-500"}
                   statDescripiron="Performance Last Month"
                   statIconName="fas fa-percent"
                   statIconColor="bg-lightBlue-500"

@@ -10,6 +10,7 @@ import FooterAdmin from "@/components/Footers/FooterAdmin.js";
 import CardLineChart from "@/components/Cards/CardLineChart.js";
 import CardTopPools from "@/components/Cards/CardTopPools";
 import CardTopAutomations from "@/components/Cards/CardTopAutomations";
+import Toast from "@/components/Toast";
 
 export default function Dashboard() {
   return (
@@ -35,6 +36,7 @@ export default function Dashboard() {
                 <FooterAdmin />
             </div>
         </div>
+        <Toast />
     </>
   );
 }

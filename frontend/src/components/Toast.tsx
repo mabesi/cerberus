@@ -17,9 +17,50 @@ function Toast() {
     const [notification, setNotification] = useState<WSMessage>({} as WSMessage);
 
     useEffect(() => {
+
         setUrl(`${WSS_URL}?token=${localStorage.getItem("token")}`);
         if (!notification.text) return;
-        //TODO: exibir o toast
+
+        function getMessage() {
+
+            if (!notification.trade) return notification.text;
+            
+            const text = notification.trade.pnl
+                ? `PnL of ${notification.trade.pnl.toFixed(2)}%`
+                : `Just opened a position.`;
+            
+                return `Automation ${notification.trade.automationId} made a swap. ${text}`;
+        }
+
+        const notyf = new window.Notyf({
+            position: {
+                x: "right",
+                y: "top"
+            },
+            duration: 0,
+            types: [{
+                type: "info",
+                background: "blue",
+                dismissible: "true"
+            },{
+                type: "error",
+                background: "red",
+                dismissible: "true"
+            },{
+                type: "success",
+                background: "green",
+                dismissible: "true"
+            }]
+        })
+
+        notyf.open({
+            type: notification.type,
+            message: getMessage()
+        })
+            .on("dismiss", () => {
+                setNotification({} as WSMessage);
+            })
+
     },[notification.text, notification.type, notification.trade]);
 
     const { lastJsonMessage } = useWebSocket(url, {
