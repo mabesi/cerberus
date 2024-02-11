@@ -1,8 +1,12 @@
 import CFG from "./config";
 import WebSocket, { WebSocketServer } from "ws";
 import { IncomingMessage } from "http";
+import jwt from "jsonwebtoken";
+import { JWT } from "commons/models/jwt";
 
 let wss: CerberusWSS;
+
+const whiteList = CFG.CORS_ORIGIN.split(",");
 
 class CerberusWS extends WebSocket {
 
@@ -14,7 +18,7 @@ class CerberusWS extends WebSocket {
     }
 }
 
-class CerberusWSS extends WebSocketServer {
+export class CerberusWSS extends WebSocketServer {
 
     isConnected(userId: string) : boolean {
         
@@ -30,6 +34,8 @@ class CerberusWSS extends WebSocketServer {
     
     direct(userId: string, jsonObj: Object) {
         
+        console.log(`Sending a direct message to ` + userId);
+
         if (!this.clients || !this.clients.size) return;
         
         ([...this.clients] as CerberusWS[]).forEach(client => {
@@ -53,8 +59,8 @@ class CerberusWSS extends WebSocketServer {
     }
 }
 
-function verifyClient(info: any, callback: Function) {
-    return callback(true);
+function corsValidation(origin: string) {
+    return whiteList[0] === "*"  || whiteList.includes(origin);
 }
 
 export default () : CerberusWSS => {
@@ -62,20 +68,25 @@ export default () : CerberusWSS => {
     if (wss) return wss;
 
     wss = new CerberusWSS({
-        port: CFG.WS_PORT,
-        verifyClient
+        port: CFG.WS_PORT
     });
 
     wss.on("connection", (ws: CerberusWS, req: IncomingMessage) => {
         
-        if (!req.url) return;
+        if (!req.url || !req.headers.origin || !corsValidation(req.headers.origin)) 
+            throw new Error(`Cors Policy`);
         
-        //TODO: implementar segurança!!!
-        ws.id = req.url;
-        
-        ws.on("message", (data) => console.log(data));
-        ws.on("error", (err) => console.error(err));
-        console.log("ws.onConnection: " + req.url);
+        const token = req.url.split("token=")[1];
+        if (!token) return;
+
+        const decoded = jwt.verify(token, CFG.JWT_SECRET) as JWT;
+
+        if (decoded && !wss.isConnected(decoded.userId)) {
+            ws.id = decoded.userId;
+            ws.on("message", (data) => console.log(data));
+            ws.on("error", (err) => console.error(err));
+            console.log("ws.onConnection: " + req.url);
+        }
     })
 
     console.log(`Cerberus WebSocket Server is running on port ${CFG.WS_PORT}`);

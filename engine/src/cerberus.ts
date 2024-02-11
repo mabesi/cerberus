@@ -6,6 +6,7 @@ import usersRepository from "./repositories/usersRepository";
 import { swap } from "commons/services/uniswapService";
 import sendMail from "./services/mailService";
 import tradesRepository from "./repositories/tradesRepository";
+import { CerberusWSS } from "./wss";
 
 function evalCondition(automation: Automation, pool: Pool) {
     
@@ -18,7 +19,7 @@ function evalCondition(automation: Automation, pool: Pool) {
     return Function("pool", "return " + ifCondition)(pool);
 }
 
-export default async (pool: Pool) : Promise<void> => {
+export default async (pool: Pool, WSS: CerberusWSS) : Promise<void> => {
 
     // buscar automações
     const automations = await automationsRepository.searchAutomations(pool.id);
@@ -28,6 +29,8 @@ export default async (pool: Pool) : Promise<void> => {
     
     automations.map(async (automation) => {
         
+        WSS.direct(automation.userId, {type: "success", text: "Analisando condição."});
+
         // testar condições
         const isValid = evalCondition(automation, pool);
         if (!isValid) return;
@@ -54,7 +57,7 @@ export default async (pool: Pool) : Promise<void> => {
                 trade = await tradesRepository.closeTrade(automation.userId, automation.id!, swapResult)
                 automation.tradeCount = automation.tradeCount ? automation.tradeCount + 1 : 1;
                 automation.pnl = automation.pnl ? automation.pnl + trade?.pnl! : trade?.pnl;
-            } else
+            } else {
                 trade = await tradesRepository.addTrade({
                     automationId: automation.id!,
                     userId: automation.userId,
@@ -62,6 +65,9 @@ export default async (pool: Pool) : Promise<void> => {
                     openAmountOut: swapResult.amountOut,
                     openPrice: swapResult.price
                 })
+            }
+
+            WSS.direct(automation.userId, {type: "success", trade});
 
             automation.isOpened = !automation.isOpened;
 
@@ -71,7 +77,8 @@ export default async (pool: Pool) : Promise<void> => {
             console.error(err);
 
             automation.isActive = false;
-            
+
+            WSS.direct(automation.userId, {type: "error", text: err.message});
 
             //TODO: reativar envio de email de erro de swap
             
