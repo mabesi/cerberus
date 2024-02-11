@@ -6,11 +6,20 @@ import React, { useEffect, useState } from "react";
 
 import CardStats from "@/components/Cards/CardStats.js";
 import { getActiveAutomations } from "@/services/AutomationService";
+import { getClosedTrades } from "@/services/TradeService";
 
 export default function HeaderStats() {
 
   const [activeAutomations, setActiveAutomations] = useState<number>(0);
   const [openedAutomations, setOpenedAutomations] = useState<number>(0);
+  const [swapsToday, setSwapsToday] = useState<number>(0);
+  const [swapsWeek, setSwapsWeek] = useState<number>(0);
+  const [dailyPerformance, setDailyPerformance] = useState<number>(0);
+  const [weeklyPerformance, setWeeklyPerformance] = useState<number>(0);
+  const [monthlyPerformance, setMonthlyPerformance] = useState<number>(0);
+  const [lastPerformance, setLastPerformance] = useState<number>(0);
+
+  const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
   useEffect(() => {
     getActiveAutomations()
@@ -18,7 +27,34 @@ export default function HeaderStats() {
         setActiveAutomations(automations.length);
         setOpenedAutomations(automations.filter(a => a.isOpened).length);
       })
-      .catch(err => console.error(err.response ? err.response.data.message.toString() : err.message.toString()))
+      .catch(err => console.error(err.response ? err.response.data.message.toString() : err.message.toString()));
+
+    getClosedTrades(new Date(Date.now() - (60 * DAY_IN_MS)))
+      .then(trades => {
+        // Card 2
+        const todayTrades = trades.filter(t => t.closeDate && t.closeDate > new Date(Date.now() - DAY_IN_MS));
+        if (todayTrades && todayTrades.length) {
+          setSwapsToday(todayTrades.length);
+          setDailyPerformance(todayTrades.filter(t => t.pnl !== undefined).map(t => t.pnl || 0).reduce((a,b) => a + b));
+        }
+        // Card 3
+        const weekTrades = trades.filter(t => t.closeDate && t.closeDate > new Date(Date.now() - (7 * DAY_IN_MS)));
+        if (weekTrades && weekTrades.length) {
+          setSwapsWeek(weekTrades.length);
+          setWeeklyPerformance(weekTrades.filter(t => t.pnl !== undefined).map(t => t.pnl || 0).reduce((a,b) => a + b));
+        }
+        // Card 4
+        const thisMonthTrades = trades.filter(t => t.closeDate && t.closeDate > new Date(Date.now() - (30 * DAY_IN_MS)));
+        if (thisMonthTrades && thisMonthTrades.length) {
+          setMonthlyPerformance(thisMonthTrades.filter(t => t.pnl !== undefined).map(t => t.pnl || 0).reduce((a,b) => a + b));
+        }
+        const lastMonthTrades = trades.filter(t => t.closeDate && t.closeDate < new Date(Date.now() - (30 * DAY_IN_MS)));
+        if (lastMonthTrades && lastMonthTrades.length) {
+          setLastPerformance(lastMonthTrades.filter(t => t.pnl !== undefined).map(t => t.pnl || 0).reduce((a,b) => a + b));
+        }
+      })
+      .catch(err => console.error(err.response ? err.response.data.message.toString() : err.message.toString()));
+
   },[]);
 
   return (
