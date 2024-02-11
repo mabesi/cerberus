@@ -31,6 +31,15 @@ export default function HeaderStats() {
 
     getClosedTrades(new Date(Date.now() - (60 * DAY_IN_MS)))
       .then(trades => {
+
+        trades = trades.map(t => {
+          return {
+            ...t,
+            openDate: new Date(t.openDate!),
+            closeDate: new Date(t.closeDate!)
+          }
+        })
+
         // Card 2
         const todayTrades = trades.filter(t => t.closeDate && t.closeDate > new Date(Date.now() - DAY_IN_MS));
         if (todayTrades && todayTrades.length) {
