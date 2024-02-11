@@ -3,7 +3,7 @@
 import React, { useEffect, useState} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import Sidebar from "@/components/Sidebar/Sidebar";
+import Sidebar from "@/components/Sidebar";
 import AdminNavbar from "@/components/Navbars/AdminNavbar";
 import FooterAdmin from "@/components/Footers/FooterAdmin";
 import AlertMessage, { AlertProps } from "@/components/AlertMessage";

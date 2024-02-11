@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { getUser, updateUser } from "@/services/UserService";
 import { getJwt } from "@/services/AuthService";
 
-import Sidebar from "@/components/Sidebar/Sidebar";
+import Sidebar from "@/components/Sidebar";
 import AdminNavbar from "@/components/Navbars/AdminNavbar";
 import FooterAdmin from "@/components/Footers/FooterAdmin";
 import AlertMessage, { AlertProps } from "@/components/AlertMessage";

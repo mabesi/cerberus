@@ -4,8 +4,8 @@ import React from "react";
 
 // components
 import AdminNavbar from "@/components/Navbars/AdminNavbar";
-import Sidebar from "@/components/Sidebar/Sidebar";
-import HeaderStats from "@/components/Headers/HeaderStats";
+import Sidebar from "@/components/Sidebar";
+import HeaderStats from "@/components/HeaderStats";
 import FooterAdmin from "@/components/Footers/FooterAdmin.js";
 import CardLineChart from "@/components/Cards/CardLineChart.js";
 import CardTopPools from "@/components/Cards/CardTopPools";
