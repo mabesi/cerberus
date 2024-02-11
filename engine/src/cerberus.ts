@@ -29,8 +29,6 @@ export default async (pool: Pool, WSS: CerberusWSS) : Promise<void> => {
     
     automations.map(async (automation) => {
         
-        WSS.direct(automation.userId, {type: "success", text: "Analisando condição."});
-
         // testar condições
         const isValid = evalCondition(automation, pool);
         if (!isValid) return;

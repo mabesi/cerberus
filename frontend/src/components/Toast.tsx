@@ -16,21 +16,21 @@ function Toast() {
     const [url, setUrl] = useState<string>(`${WSS_URL}?token=`);
     const [notification, setNotification] = useState<WSMessage>({} as WSMessage);
 
+    function getMessage() {
+
+        if (!notification.trade) return notification.text;
+        
+        const text = notification.trade.pnl
+            ? `PnL of ${notification.trade.pnl.toFixed(2)}%`
+            : `Just opened a position.`;
+        
+        return `Automation ${notification.trade.automationId} made a swap. ${text}`;
+    }
+
     useEffect(() => {
 
-        setUrl(`${WSS_URL}?token=${localStorage.getItem("token")}`);
-        if (!notification.text) return;
-
-        function getMessage() {
-
-            if (!notification.trade) return notification.text;
-            
-            const text = notification.trade.pnl
-                ? `PnL of ${notification.trade.pnl.toFixed(2)}%`
-                : `Just opened a position.`;
-            
-                return `Automation ${notification.trade.automationId} made a swap. ${text}`;
-        }
+        setUrl(`${WSS_URL}?token=${localStorage.getItem("token") || ""}`);
+        if (!notification.text && !notification.trade) return;
 
         const notyf = new window.Notyf({
             position: {
@@ -81,7 +81,6 @@ function Toast() {
 
     return (
         <>
-            
         </>
     )
 }
