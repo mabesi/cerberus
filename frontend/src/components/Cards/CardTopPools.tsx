@@ -45,7 +45,7 @@ export default function CardTopPools() {
             <tbody>
               {
                 pools && pools.map(p => (
-                  <tr>
+                  <tr key={p.id}>
                     <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
                       {p.symbol} ({p.fee / 10000}%)
                     </th>

@@ -77,11 +77,11 @@ export default function HeaderStats() {
               <div className="w-full lg:w-6/12 xl:w-3/12 px-4">
                 <CardStats
                   statSubtitle="Trading Day"
-                  statTitle="2,356"
-                  statArrow="down"
-                  statPercent="3.48"
-                  statPercentColor="text-red-500"
-                  statDescripiron="Since last week"
+                  statTitle={`${swapsToday}`}
+                  statArrow={dailyPerformance >= 0 ? "up" : "down"}
+                  statPercent={`${dailyPerformance.toFixed(2)}`}
+                  statPercentColor={dailyPerformance >= 0 ? "text-emerald-500" : "text-red-500"}
+                  statDescripiron="Performance Today"
                   statIconName="fas fa-clock"
                   statIconColor="bg-orange-500"
                 />
@@ -89,11 +89,11 @@ export default function HeaderStats() {
               <div className="w-full lg:w-6/12 xl:w-3/12 px-4">
                 <CardStats
                   statSubtitle="Trading Week"
-                  statTitle="924"
-                  statArrow="down"
-                  statPercent="1.10"
-                  statPercentColor="text-orange-500"
-                  statDescripiron="Since yesterday"
+                  statTitle={`${swapsWeek}`}
+                  statArrow={weeklyPerformance >= 0 ? "up" : "down"}
+                  statPercent={`${weeklyPerformance.toFixed(2)}`}
+                  statPercentColor={weeklyPerformance >= 0 ? "text-emerald-500" : "text-red-500"}
+                  statDescripiron="Performance This Week"
                   statIconName="fas fa-calendar"
                   statIconColor="bg-pink-500"
                 />
@@ -101,11 +101,11 @@ export default function HeaderStats() {
               <div className="w-full lg:w-6/12 xl:w-3/12 px-4">
                 <CardStats
                   statSubtitle="Trading Month"
-                  statTitle="49,65%"
-                  statArrow="up"
-                  statPercent="12"
-                  statPercentColor="text-emerald-500"
-                  statDescripiron="Since last month"
+                  statTitle={`${monthlyPerformance.toFixed(2)}%`}
+                  statArrow={monthlyPerformance >= lastPerformance ? "up" : "down"}
+                  statPercent={`${lastPerformance.toFixed(2)}`}
+                  statPercentColor={lastPerformance >= 0 ? "text-emerald-500" : "text-red-500"}
+                  statDescripiron="Performance Last Month"
                   statIconName="fas fa-percent"
                   statIconColor="bg-lightBlue-500"
                 />

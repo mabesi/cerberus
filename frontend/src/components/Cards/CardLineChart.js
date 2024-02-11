@@ -24,7 +24,7 @@ export default function CardLineChart() {
   }, []);
   return (
     <>
-      <div class="tradingview-widget-container">
+      <div className="tradingview-widget-container">
         <div id="tradingview_d08aa" style={{height:450}}></div>
       </div>
     </>
